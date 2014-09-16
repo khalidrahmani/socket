@@ -31,7 +31,7 @@ module.exports = {
     }
   },
   production: {
-    db: process.env.MONGOHQ,
+    db: process.env.MONGOLAB_URI,
     root: rootPath,
     notifier: notifier,
     app: {
