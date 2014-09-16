@@ -1,0 +1,17 @@
+<% include ../layouts/header %>
+<input type="text" id="count"/>
+    hello
+          <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        var socket = io.connect('http://localhost');
+        socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
+          setInterval(function(){
+            socket.emit('update_chart', 'tobi', function (data) {
+              $("#count").val(data.count);              
+            });       
+          }, 5000);       
+        });
+      </script> 
+      
+<% include ../layouts/footer %>

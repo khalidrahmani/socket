@@ -1,0 +1,35 @@
+
+  </div>
+ 
+      <script type="text/javascript" src="/js/jquery.min.js"></script>
+      <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="/js/main.js"></script>
+      <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->      
+      <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+      <script type="text/javascript" src="/js/app.js"></script>  
+      <script type="text/javascript">
+         $(document).ready(function(){
+            <% if (typeof params != 'undefined') { %> 
+                <% for (var key in params) { %>
+                    elmnt = $('[id="<%=key%>"]')                    
+                    if( elmnt.is('input:checkbox') ) {                      
+                      if('<%=params[key]%>' == 'on' || '<%=params[key]%>' == 'true'){
+                        elmnt.prop('checked', true)                        
+                      }
+                    }else{
+                      $('[id="<%=key%>"]').val('<%=params[key]%>')
+                    }                    
+                <% } %>        
+            <% } %>  
+            <% if (typeof error != 'undefined') { %> 
+               <% for (var key in error.errors) { %>
+                       $("#<%=key%>").after("<span class='help-inline'><%= error.errors[key].message %></span>");
+                       $("#<%=key%>").parent().parent().addClass("error")                     
+               <% } %>
+            <% } %>
+            })
+      </script>  
+</body>
+</html>  

@@ -1,0 +1,40 @@
+<% include ../layouts/header %>
+<div class="container-fluid">
+	<hr>
+	<section>
+		<div class="page-header">
+			<h1> <small> Settings </small></h1>
+		</div>
+		<div class="row-fluid">
+			<div class="span6">
+				<form novalidate="novalidate" method="post" class="simple_form form-horizontal" action="/users/settings" accept-charset="UTF-8">
+				<fieldset>
+					<div class="control-group string optional">
+						<label class="string optional control-label">InterActiveTel API Key</label>
+						<div class="controls">
+							<input type="text" size="50" name="interactivetel_api_key" id="interactivetel_api_key" class="string optional input-xlarge"/>
+						</div>
+					</div>
+					<div class="control-group url optional">
+					<label class="url optional control-label">InterActiveTel Web Service URL</label>
+					<div class="controls">
+					<input type="url" size="50" name="interactivetel_web_service_url" id="interactivetel_web_service_url" class="string url optional input-xlarge">
+					</div>
+					</div>
+					
+					<div class="control-group">
+						<label for="input01" class="control-label"> </label>
+						<div class="controls">
+							<button class="btn btn-warning">
+								Save changes
+							</button>							
+						</div>
+					</div>
+				</fieldset>
+</form>			</div>
+		</div>
+		<div class="row-fluid"></div>
+	</section>
+</div>
+
+<% include ../layouts/footer %>

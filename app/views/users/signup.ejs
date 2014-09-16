@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+   <head>
+      <title>Website Tracker</title>
+      <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+      <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+      <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.css" />
+      <link rel="stylesheet" type="text/css" href="/css/style.css" />
+   </head>
+   <body>
+      <div class="container-fluid">
+         <div class="row-fluid">
+            <div class="span3"></div>
+            <div class="span5">
+               <div class="container-fluid m-login-container">
+                  <div class="page-header">
+                     <h2>Tracker  <small>Create account </small> or <small>    <a href="/login">Login</a></small></h2>
+                  </div>
+                  <form action="/users" novalidate="novalidate" method="post" class="simple_form form-horizontal" accept-charset="UTF-8">           
+                     <div class="control-group string required">
+                        <label for="user_first_name" class="string required control-label"><abbr title="required">*</abbr> First name</label>
+                        <div class="controls">
+                        <input type="text" size="50" name="first_name" id="first_name" class="string required" value="<%= user.first_name || '' %>"></div>
+                     </div>
+                     <div class="control-group string required">
+                        <label for="user_last_name" class="string required control-label"><abbr title="required">*</abbr> Last name</label>
+                        <div class="controls">
+                          <input type="text" size="50" id="last_name" name="last_name" class="string required" value="<%= user.last_name || '' %>">
+                        </div>
+                     </div>
+                     <div class="control-group tel optional">
+                        <label for="user_phone" class="tel optional control-label">Phone</label>
+                        <div class="controls">
+                          <input type="text" size="50" id="phone" name="phone" class="string tel optional" value="<%= user.phone || '' %>">
+                        </div>
+                     </div>
+                     <div class="control-group email required">
+                        <label for="user_email" class="email required control-label"><abbr title="required">*</abbr> Email</label>
+                        <div class="controls">
+                          <input type="email" size="50" id="email" name="email" class="string email required" value="<%= user.email || '' %>"/>
+                        </div>
+                     </div>
+                     <div class="control-group required">
+                        <label for="user_password" class="required control-label"><abbr title="required">*</abbr> Password</label>
+                        <div class="controls">
+                           <input type="password" size="50" id="password" name="password" class="required">
+                        </div>
+                     </div>
+                     <button type="submit" style="margin-top: 15px" class="btn btn-primary"> Save </button>  
+                  </form>
+               </div>
+            </div>
+            <div class="span3"></div>
+         </div>
+      </div>
+      <script type="text/javascript" src="/js/jquery.min.js"></script>
+      <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="/js/main.js"></script>
+      <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->  
+      <script type="text/javascript">
+         $(document).ready(function(){
+            <% if (typeof error != 'undefined') { %> 
+               <% for (var key in error.errors) { %>
+                       $("#<%=key%>").after("<span class='help-inline'><%= error.errors[key].message %></span>");
+                       $("#<%=key%>").parent().parent().addClass("error")                     
+               <% } %>
+            <% } %>
+            })
+      </script>    
+   </body>
+</html>
+

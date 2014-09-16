@@ -1,0 +1,105 @@
+<% include ../layouts/header %>
+<div class="container-fluid">
+   <hr>
+   <section>
+      <div class="page-header">
+         <h1> <small>Update User account </small></h1>
+      </div>
+      <div class="row-fluid">
+         <div class="span6">
+				<form novalidate="novalidate" method="post" class="simple_form form-horizontal" action="/users/update" accept-charset="UTF-8">
+				<fieldset>
+					<div class="control-group string">
+					<label class="string control-label">Id</label>
+					<div class="controls">
+					<input type="text" size="50" name="_id" id="_id" class="string required input-xlarge" disabled="disabled"/>
+					</div>
+					</div>
+
+					<div class="control-group string required">
+					<label class="string required control-label">
+					<abbr title="required">*</abbr> First Name</label>
+					<div class="controls">
+					<input type="text" size="50" name="first_name" id="first_name" class="string required input-xlarge">
+					</div>
+					</div>
+					<div class="control-group string required">
+					<label class="string required control-label">
+					<abbr title="required">*</abbr> Last Name</label>
+					<div class="controls"><input type="text" size="50" name="last_name" id="last_name" class="string required input-xlarge">
+					</div></div>
+					<div class="control-group optional">
+					<label class="tel optional control-label">Phone</label>
+					<div class="controls">
+					<input type="tel" size="50" name="phone" id="phone" class="string tel optional input-xlarge">
+					</div></div>
+					<div class="control-group email required disabled"><label for="email" class="email required control-label"><abbr title="required">*</abbr> Email</label><div class="controls">
+					<input type="text" value="<%= user.email%>" size="50" name="email" id="email" disabled="disabled" class="string email required disabled input-xlarge"></div></div>
+					<div class="control-group string optional"><label for="company_name" class="string optional control-label">Company</label><div class="controls">
+					<input type="text" size="50" 
+					name="company_name" id="company_name" class="string optional input-xlarge"></div></div>
+					<div class="control-group string optional">
+					<label class="string optional control-label">Street Address 1</label><div class="controls">
+					<input type="text" size="50" name="street_address" 
+					id="street_address" class="string optional input-xlarge span12"></div></div>
+					
+					<div class="control-group string optional"><label for="street_address_2" class="string optional control-label">Street Address 2</label><div class="controls"><input type="text" size="50" name="street_address_2" id="street_address_2" class="string optional input-xlarge span12"></div></div>
+					<div class="control-group string optional"><label for="city" class="string optional control-label">City</label><div class="controls"><input type="text" size="50" name="city" id="city" class="string optional input-xlarge"></div></div>
+					<div class="control-group string optional"><label for="state_province" class="string optional control-label">State / Province</label><div class="controls"><input type="text" size="50" name="state_province" id="state_province" class="string optional input-xlarge"></div></div>
+					<div class="control-group string optional"><label for="postal_code" class="string optional control-label">Postal Code</label><div class="controls">
+					<input type="text" size="50" name="postal_code" id="postal_code" class="string optional input-xlarge"></div></div>
+					<div class="control-group select optional"><label for="country" class="select optional control-label">Country</label><div class="controls"><select name="country" id="country" class="select optional input-xlarge"><option value=""></option>
+<option value="United States">United States</option>
+<option value="Canada">Canada</option></select></div></div>	
+					
+					
+					<div class="control-group select optional"><label for="timezone" class="select optional control-label">Timezone</label>
+					<div class="controls">
+					<select name="timezone" id="timezone" class="select optional">
+							<option value="">Select Timezone</option>
+							<option value="-11">UTC -11:00</option>
+							<option value="-10">UTC -10:00</option>
+							<option value="-9">UTC -09:00</option>
+							<option value="-8">UTC -08:00</option>
+							<option value="-7">UTC -07:00</option>
+							<option value="-6">UTC -06:00</option>
+							<option value="-5">UTC -05:00</option>
+							<option value="-4">UTC -04:00</option>
+							<option value="-3">UTC -03:00</option>
+							<option value="-2">UTC -02:00</option>
+							<option value="-1">UTC -01:00</option>
+							<option value="+0">UTC +00:00</option>
+							<option value="+1">UTC +01:00</option>
+							<option value="+2">UTC +02:00</option>
+							<option value="+3">UTC +03:00</option>
+							<option value="+4">UTC +04:00</option>
+							<option value="+5">UTC +05:00</option>
+							<option value="+6">UTC +06:00</option>
+							<option value="+7">UTC +07:00</option>
+							<option value="+8">UTC +08:00</option>
+							<option value="+9">UTC +09:00</option>
+							<option value="+10">UTC +10:00</option>
+							<option value="+11">UTC +11:00</option>
+							<option value="+12">UTC +12:00</option>
+							<option value="+13">UTC +13:00</option>
+					</select>
+					</div>
+					</div>
+					<div class="control-group">
+						<label for="input01" class="control-label"> </label>
+						<div class="controls">
+							<button class="btn btn-primary" type="submit">
+								Save changes
+							</button>							
+						</div>
+					</div>
+					
+					
+				</fieldset>
+</form>
+         </div>
+      </div>
+      <div class="row-fluid"></div>
+   </section>
+</div>
+<% include ../layouts/footer %>

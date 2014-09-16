@@ -1,0 +1,66 @@
+{
+  "name": "App",
+  "description": "SiteTracker",
+  "keywords": [
+    "express",
+    "mongoose",
+    "mongodb",
+    "passport",
+    "demo"
+  ],
+  "version": "3.0.0",
+  "private": true,
+  "author": "SiteTracker",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm":  "1.4.x"
+  },
+  "scripts": {
+    "start": "NODE_ENV=development ./node_modules/.bin/nodemon server.js",
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec --timeout 10000 test/test-*.js"
+  },
+  "dependencies": {
+    "express": "latest"
+    ,"ejs": "latest"
+    ,"mongoose": "latest"
+    ,"connect-mongo": "latest"
+    ,"connect-flash": "latest"
+    ,"passport": "latest"                                         
+    ,"passport-local": "latest"
+    ,"winston": "latest"
+    ,"notifier": "latest"
+    ,"async": "latest"
+    ,"view-helpers": "latest"
+    ,"forever": "latest"
+    
+    ,"serve-favicon": "latest"
+    ,"cookie-parser": "latest"
+    ,"body-parser": "latest"
+    ,"compression": "latest"
+    ,"morgan": "latest"
+    ,"express-session": "latest"
+    ,"method-override": "latest"
+    ,"csrf-crypto": "latest"
+    ,"validator": "latest"
+    ,"mongoose-validator": "latest"
+    ,"mongoose-unique-validator": "latest"
+    ,"moment": "latest"
+    ,"underscore": "latest"
+    ,"geoip-lite": "https://github.com/khalidrahmani/node-geoip/tarball/master"
+    ,"request": "latest"    
+    ,"pagination": "https://github.com/khalidrahmani/pagination/tarball/master" 
+    ,"express-xml-bodyparser": "latest" 
+    ,"socket.io": "latest"   
+
+  },
+  "devDependencies": {
+    "supertest": "latest",
+    "should": "latest",
+    "mocha": "latest",
+    "nodemon": "latest"
+  }
+}

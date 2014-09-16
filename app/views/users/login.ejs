@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+   <head>
+      <title>Website Tracker</title>
+      <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+      <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+      <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.css" />
+      <link rel="stylesheet" type="text/css" href="/css/style.css" />
+      <script type="text/javascript" src="/js/jquery.min.js"></script>
+      <script type="text/javascript" src="/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="/js/main.js"></script>
+      <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+   </head>
+   <body>
+      <div class="container-fluid">
+         <div class="row-fluid">
+            <div class="span4"></div>
+            <div class="span4 ">
+              
+              <% if (typeof errors != 'undefined' && errors.length) { %>
+                 <div class="alert alert-error">
+                    <a data-dismiss="alert" class="close">×</a>
+                    <%= errors %> 
+                 </div>
+               <% } %>
+
+               <div class="container-fluid m-login-container">
+                  <div class="page-header">
+                     <h2>Tracker  <small>Login</small> or <small>    <a href="/signup">Create account</a></small></h2>
+                     <div class="pull-right">
+                        <a data-remote="true" data-controls-modal="myModal" href="/password_resets/new">forgotten password?</a>             
+                     </div>
+                  </div>
+                  <form action="/users/session" method="post" role="form" class="form-horizontal" accept-charset="UTF-8">
+                     <input type="text" size="30" placeholder="Enter email" name="email" class="span12"  value="<%= email %>"/>
+                     <label></label>
+                     <input type="password" size="30" placeholder="Enter password" name="password" class="span12"/>
+                     <button type="submit" style="margin-top: 15px" class="btn btn-primary"> Login</button>  
+                  </form>
+               </div>
+            </div>
+            <div class="span4"></div>
+         </div>
+      </div>      
+      </div>
+   </body>
+</html>
