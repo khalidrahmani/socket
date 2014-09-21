@@ -1,17 +1,254 @@
-<% include ../layouts/header %>
-<input type="text" id="count"/>
-    hello
-          <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-      <script src="/socket.io/socket.io.js"></script>
-      <script>
-        var socket = io.connect('http://localhost');
-        socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
-          setInterval(function(){
-            socket.emit('update_chart', 'tobi', function (data) {
-              $("#count").val(data.count);              
-            });       
-          }, 5000);       
-        });
-      </script> 
-      
-<% include ../layouts/footer %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="ThemeBucket">
+    <link rel="shortcut icon" href="images/favicon.png">
+    <title>Tracking App</title>
+    <!--Core CSS -->
+    <link href="bs3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="js/jquery-ui/jquery-ui-1.10.1.custom.min.css" rel="stylesheet">
+    <link href="css/bootstrap-reset.css" rel="stylesheet">
+    <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
+    <!--Morris Chart CSS -->
+    <link rel="stylesheet" href="js/morris-chart/morris.css">
+    <!-- Custom styles for this template -->
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/style-responsive.css" rel="stylesheet"/>
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]>
+    <script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+<section id="container">
+<header class="header fixed-top clearfix">
+<div class="brand">
+    <a href="/" class="logo">
+        <img src="images/logooo.png" alt="Tracking App">
+    </a>    
+</div>
+<div id="top_menu" class="nav notify-row">
+    <a class="btn btn-danger" data-toggle="modal" href="#myModal" role='button'> Broadcast message </a>     
+</div>
+
+<div class="top-nav clearfix">
+    <!--search & user info start-->
+    <ul class="nav pull-right top-menu">        
+        <!-- user login dropdown start-->
+        <li class="dropdown">
+            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                <img alt="" src="images/avatar1_small.jpg">
+                <span class="username">John Doe</span>
+                <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu extended logout">                
+                <li><a href="/logout"><i class="fa fa-key"></i> Log Out</a></li>
+            </ul>
+        </li>
+        <!-- user login dropdown end -->        
+    </ul>
+    <!--search & user info end-->
+</div>
+</header>
+<!--header end-->
+<!--sidebar start-->
+<aside>
+    <div id="sidebar" class="nav-collapse">
+        <!-- sidebar menu start-->
+        <div class="leftside-navigation">
+            <ul class="sidebar-menu" id="nav-accordion">
+                <li>
+                    <a class="active" href="/">
+                        <i class="fa fa-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>        
+            </ul>    
+          </div>
+        <!-- sidebar menu end-->
+    </div>
+</aside>
+<!--sidebar end-->
+<!--main content start-->
+<section id="main-content">
+<section class="wrapper">
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="mini-stat clearfix">
+                <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
+                <div class="mini-stat-info">
+                    <span><%= time_on_site_since_midnight %></span>
+                    Time on site since midnight
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mini-stat clearfix">
+                <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
+                <div class="mini-stat-info">
+                    <span><%= mounth_visitors_peack %></span> 
+                    Month high visitors
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="mini-stat clearfix">
+                <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
+                <div class="mini-stat-info">
+                    <span>0</span>
+                    Total engagement of the day
+                </div>
+            </div>
+        </div>    
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <!--earning graph start-->
+            <section class="panel">
+                <header class="panel-heading">
+                    Live Visitors
+                </header>
+                <div class="panel-body">
+                    <div id="graph-area" class="main-chart" >
+                    </div>
+                </div>
+            </section>
+            <!--earning graph end-->
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <section class="panel">
+                <div class="panel-body">
+                    <div class="top-stats-panel">
+                        <div class="gauge-canvas">
+                            <h4 class="widget-h">New/Returning Visitors</h4>
+                        </div>
+                        <div id="new_returning_visitors_donut" style="height: 220px;"></div>
+                        
+
+                    </div>
+                </div>
+            </section>
+        </div>    
+        <div class="col-md-3">
+            <section class="panel">
+                <div class="panel-body">
+                    <div class="top-stats-panel">
+                        <div class="gauge-canvas">
+                            <h4 class="widget-h">Desktop/Mobile</h4>
+                        </div>
+                        <div id="donut-example" style="height: 220px;"></div>
+                        
+
+                    </div>
+                </div>
+            </section>
+        </div> 
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <section class="panel">
+                <header class="panel-heading">
+                    Live Visited URLs                            
+                </header>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead>
+                        <tr>                                    
+                            <th>URL</th>
+                            <th>Count</th>                                    
+                        </tr>
+                        </thead>
+                        <tbody id="urls_hit">
+                                                                                    
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+        </div>
+        <div class="col-sm-6">
+            <section class="panel">
+                <header class="panel-heading">
+                    Live Visitor Location
+                </header>
+                <div class="panel-body">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>                                    
+                            <th>Location</th>
+                            <th>Count</th>                                    
+                        </tr>
+                        </thead>
+                        <tbody id="users_location">
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                  <h4 class="modal-title" >Broadcast Message </h4>
+              </div>
+              <div class="modal-body">
+                  <input type="text" name="message" id="message" placeholder="Message" autocomplete="off" class="form-control placeholder-no-fix">
+              </div>
+              <div class="modal-footer" id="broadcast_title">
+                  <button data-dismiss="modal" class="btn btn-default" type="button"> Close </button>
+                  <button class="btn btn-success" type="button" id="broadcast_message_button"> Submit </button>
+              </div>
+          </div>
+      </div>
+    </div>
+</section>
+</section>
+<!-- Placed js at the end of the document so the pages load faster -->
+<!--Core js-->
+<script src="js/jquery.js"></script>
+<script src="js/jquery-ui/jquery-ui-1.10.1.custom.min.js"></script>
+<script src="bs3/js/bootstrap.min.js"></script>
+
+
+<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="js/flot-chart/excanvas.min.js"></script><![endif]-->
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+<!--Easy Pie Chart-->
+<script src="js/easypiechart/jquery.easypiechart.js"></script>
+<!--Morris Chart-->
+<script src="js/morris-chart/morris.min.js"></script>
+<script src="js/morris-chart/raphael-min.js"></script>
+<!--jQuery Flot Chart-->
+<!--script src="js/flot-chart/jquery.flot.js"></script>
+<script src="js/flot-chart/jquery.flot.tooltip.min.js"></script>
+<script src="js/flot-chart/jquery.flot.resize.js"></script>
+<script src="js/flot-chart/jquery.flot.pie.resize.js"></script>
+<script src="js/flot-chart/jquery.flot.animator.min.js"></script>
+<script src="js/flot-chart/jquery.flot.growraf.js"></script-->
+<script src="/socket.io/socket.io.js"></script>
+<script src="js/app.js"></script>
+
+
+<!--common script init for all pages-->
+<script src="js/scripts.js"></script>
+<!--script for this page-->
+</body>
+</html>

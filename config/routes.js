@@ -25,6 +25,7 @@ module.exports = function (app, passport) {
   app.post('/users/settings', auth.requiresLogin, users_controller.updateSettings) 
 
   app.get('/', auth.requiresLogin, dashboard_controller.index)  
+  app.post('/dashboard/broadcast', auth.requiresLogin, dashboard_controller.broadcast)  
 
   app.post('/track', tracker_controller.track)
   

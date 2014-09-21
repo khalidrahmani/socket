@@ -3,7 +3,7 @@ var mongoose        = require('mongoose')
    ,Visit           = mongoose.model('Visit')   
    ,moment          = require('moment')
    ,async    		= require('async')
-   ,date            = moment().subtract(2, 'day')._d	
+   //,date            = moment().subtract(2, 'day')._d	
 
 exports.track = function (req, res){
 	res.header("Access-Control-Allow-Origin", "*")
@@ -14,8 +14,7 @@ exports.track = function (req, res){
 		,ip                 = req.connection.remoteAddress // "88.190.229.170" // "105.189.28.69" //   "125.121.121.112"
 		,visitor_id         = req.body['visitor_id'] || null
 		,visit_id           = req.body['visit_id'] || null
-		,url               = req.headers["referer"] || "" 
-	
+		,url                = req.headers["referer"] || "" 
 	if(visit_id){
 		Visit.update({_id: visit_id}, {$set: { end: new Date(), url: url}}, { multi: false }, function (err, numAffected) {
 			res.send({visitor_id: visitor_id, visit_id: visit_id})			
@@ -27,24 +26,24 @@ exports.track = function (req, res){
 		if(err){
 			console.log(err)
 			res.send({err: err})
-		}	
-		else{			
+		}
+		else{		
 			if(numAffected != 1){
 				visitor = new Visitor({ip: ip})
 				visitor.save(function (err) {
-					visit = new Visit({visitor: visitor._id, url: url})
+					visit = new Visit({visitor: visitor._id, url: url, mobile: req.body['mobile']})
 					visit.save(function (err){
 						res.send({visitor_id: visitor._id, visit_id: visit._id})
 					})					
 				})
 			}
 			else{
-				visit = new Visit({visitor: visitor_id, url: url})
+				visit = new Visit({visitor: visitor_id, url: url, mobile: req.body['mobile']})
 				visit.save(function (err){
 					res.send({visitor_id: visitor_id, visit_id: visit._id})
 				})
-			}				
-		}
+			}
+		  }
 		})	
 	}	
 }

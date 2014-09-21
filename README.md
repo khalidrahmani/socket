@@ -24,4 +24,12 @@ Display should be a cross between hummingbirdstats and dashing .io
 - the admin alerts (checkout page trouble, and sales notification) should appear on the admin screen no matter what page the admin user is on
 - ideally some data is saved, but the system i needs to be as lightweight / server friendly as possible.
 
+http://trackingdashboard.herokuapp.com
 
+Or using Html5 data attribute :
+
+http://stackoverflow.com/questions/16098397/pass-variables-to-javascript-in-expressjs
+
+<div id="graph-area" data-users="<%= JSON.stringify(server_data) %>"></div>
+
+<script type="text/javascript"> var users = $('#graph-area').data('users'); </script>
