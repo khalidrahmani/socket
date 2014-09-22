@@ -11,8 +11,8 @@ function getCookie(key) {
     return keyValue ? keyValue[2] : null;
 }
 $(document).ready(function(){	
-	var visitor_id = getCookie("dash_visitor_id__32") || "";
-	var visit_id   = getCookie("dash_visit_id__32") || "";
+	var visitor_id = getCookie("dash_visitor_id__33") || "";
+	var visit_id   = getCookie("dash_visit_id__33") || "";
     setInterval(function(){
 		jQuery.ajax({
 			type : "POST",
@@ -28,8 +28,8 @@ $(document).ready(function(){
 				if(data.visitor_id){
 					visitor_id = data.visitor_id;
 					visit_id = data.visit_id;
-					setCookie("dash_visitor_id__32", data.visitor_id, 1000);
-					setCookie("dash_visit_id__32", data.visit_id, 5); // five min
+					setCookie("dash_visitor_id__33", data.visitor_id, 1000);
+					setCookie("dash_visit_id__33", data.visit_id, 5); // five min
 				}
 			}
 		});
