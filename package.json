@@ -50,7 +50,7 @@
     ,"mongoose-unique-validator": "latest"
     ,"moment": "latest"
     ,"underscore": "latest"
-    ,"geoip-lite": "https://github.com/khalidrahmani/node-geoip/tarball/master"
+    ,"geoip-lite": "latest"
     ,"request": "latest"    
     ,"pagination": "https://github.com/khalidrahmani/pagination/tarball/master" 
     ,"express-xml-bodyparser": "latest" 

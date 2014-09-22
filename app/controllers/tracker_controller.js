@@ -11,7 +11,7 @@ exports.track = function (req, res){
   		//console.log("session destroyed")
 	})
 	var  websiteUrl         = req.headers["origin"]		
-		,ip                 = req.connection.remoteAddress // "88.190.229.170" // "105.189.28.69" //   "125.121.121.112"
+		,ip                 = req.connection.remoteAddress //"105.148.27.127" "88.190.229.170"  "105.189.28.69"
 		,visitor_id         = req.body['visitor_id'] || null
 		,visit_id           = req.body['visit_id'] || null
 		,url                = req.headers["referer"] || "" 

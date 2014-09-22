@@ -1,9 +1,7 @@
 var my_chart, new_returning_visitors_chart;
 (function ($) {
-    "use strict";
-         
-            
-if (Morris.EventEmitter) {            
+    "use strict";                     
+    if (Morris.EventEmitter) {            
             my_chart = Morris.Line({
                 element: 'graph-area',
                 data:   [],
@@ -21,9 +19,6 @@ if (Morris.EventEmitter) {
               ]
             });
         }
-
-    
-
 })(jQuery);
 
 var visitors_data = []
