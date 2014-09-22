@@ -26,8 +26,10 @@ if (Morris.EventEmitter) {
 
 })(jQuery);
 
-var visitors_data = [];
-var socket = io.connect('http://localhost');
+var visitors_data = []
+var websiteURL = 'http://localhost'
+var websiteURL = 'http://trackingdashboard.herokuapp.com'
+var socket = io.connect(websiteURL)
 socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
     setInterval(function(){
       socket.emit('update_chart', 'd', function (data) {

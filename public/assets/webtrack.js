@@ -37,5 +37,9 @@ $(document).ready(function(){
 });
 var socket = io.connect(websiteUrl);
 socket.on('broadcast_message', function(message) { 	
- 	$("body").append(message)
+	console.log(message);
+ 	$("body").append(message);
+});
+$(window).on('beforeunload', function(){
+    socket.close();
 });
