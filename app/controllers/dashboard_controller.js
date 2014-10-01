@@ -3,6 +3,8 @@ var mongoose   = require('mongoose')
    ,moment     = require('moment')
    ,_          = require('underscore')
 
+
+var allUsers = [];
 exports.index = function (req, res) {	
 	var  now = new Date()
         ,time_on_site_since_midnight = 0
@@ -53,8 +55,32 @@ exports.index = function (req, res) {
 
 exports.respond = function(socket){  
     var remote_ip_address = socket.handshake.headers['x-forwarded-for'];
-    console.log(" ----------------------------------------------------------------------------");
-    console.log(remote_ip_address);
+    var live_url = socket.handshake.headers.origin;
+    console.log('----------------------------------------------------------------')
+
+    allUsers.push(socket);
+    socket.on('disconnect', function () {
+        console.log('disconnected')
+        var i = allUsers.indexOf(socket)
+        allUsers.splice(i, 1)        
+    });
+    
+    console.log(allUsers.length)
+    socket.on('update_chart', function (name, fn) {
+      var new_visitors = returning_visitors = 0 ;
+        date = new Date()
+        date.setSeconds(date.getSeconds() - 6)
+        _date = format(date.getHours())+":"+format(date.getMinutes())+":"+format(date.getSeconds())
+        new_returning_visitors = [ {label: "New Visitors", value: 15}, {label: "Returning Visitors", value: 75} ]       
+        fn({    date: _date, 
+                count: allUsers.length, 
+                new_returning_visitors: new_returning_visitors, 
+                live_urls_hit: {}, 
+                users_location: {}
+            });
+
+    });
+    /*
 	socket.on('update_chart', function (name, fn) {        
         var new_visitors = returning_visitors = 0 ;
 		date = new Date()
@@ -84,17 +110,18 @@ exports.respond = function(socket){
             });
 		})
   	});
+*/
     socket.on('broadcast_message', function (message, fn) { 
         console.log(message)
         socket.broadcast.emit('broadcast_message', message);
     })
 }
-
+/*
 exports.broadcast = function (req, res) {
     socket.broadcast.send({message: "message"});
     res.json({message: " Message broadcasted ! "})
 }
-
+*/
 function format(i){
     return (i<10)? "0"+i : i;
 }

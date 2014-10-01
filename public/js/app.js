@@ -22,8 +22,8 @@ var my_chart, new_returning_visitors_chart;
 })(jQuery);
 
 var visitors_data = []
-var websiteURL = 'http://localhost'
-//var websiteURL = 'http://trackingdashboard.herokuapp.com'
+//var websiteURL = 'http://localhost'
+var websiteURL = 'http://trackingdashboard.herokuapp.com'
 var socket = io.connect(websiteURL)
 socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
     setInterval(function(){
