@@ -56,8 +56,9 @@ exports.index = function (req, res) {
 exports.respond = function(socket){  
     var remote_ip_address = socket.handshake.headers['x-forwarded-for'];
     var live_url = socket.handshake.headers.origin;
+    var browser_type = (socket.handshake.headers['user-agent'].indexOf("Mobile") > -1) ? 'Mobile' : 'Desktop' ;
     console.log('----------------------------------------------------------------')
-    console.log(socket.handshake)
+    console.log(browser_type)
     allUsers.push(socket);
     socket.on('disconnect', function () {
         console.log('disconnected')
