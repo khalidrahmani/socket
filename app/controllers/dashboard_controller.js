@@ -52,7 +52,7 @@ exports.index = function (req, res) {
 }
 
 exports.respond = function(socket){  
-    var remote_ip_address = socket.handshake.address;
+    var remote_ip_address = socket.handshake.headers['x-forwarded-for'];
     console.log(" ----------------------------------------------------------------------------");
     console.log(remote_ip_address);
 	socket.on('update_chart', function (name, fn) {        
