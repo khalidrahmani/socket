@@ -10,6 +10,8 @@ function getCookie(key) {
     var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
     return keyValue ? keyValue[2] : null;
 }
+
+/*
 $(document).ready(function(){	
 	var visitor_id = getCookie("dash_visitor_id__32") || "";
 	var visit_id   = getCookie("dash_visit_id__32") || "";
@@ -35,7 +37,12 @@ $(document).ready(function(){
 		});
 	}, 5000);
 });
+*/
+
 var socket = io.connect(websiteUrl);
+
+
+
 socket.on('broadcast_message', function(message) { 	
  	$("body").append(message)
 });
