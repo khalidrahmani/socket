@@ -57,7 +57,7 @@ exports.respond = function(socket){
     var remote_ip_address = socket.handshake.headers['x-forwarded-for'];
     var live_url = socket.handshake.headers.origin;
     console.log('----------------------------------------------------------------')
-
+    console.log(socket.handshake)
     allUsers.push(socket);
     socket.on('disconnect', function () {
         console.log('disconnected')

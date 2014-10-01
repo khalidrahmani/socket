@@ -22,8 +22,8 @@ var my_chart, new_returning_visitors_chart;
 })(jQuery);
 
 var visitors_data = []
-//var websiteURL = 'http://localhost'
-var websiteURL = 'http://trackingdashboard.herokuapp.com'
+
+var websiteURL = window.location.protocol + "//" + window.location.host 
 var socket = io.connect(websiteURL)
 socket.on('connect', function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
     setInterval(function(){
@@ -49,19 +49,5 @@ socket.on('connect', function () { // TIP: you can avoid listening on `connect` 
 $( "#broadcast_message_button" ).click(function() {
     $( "#broadcast_title" ).prepend($("<span id='message_text'>message broadcasted</span>"));
     setTimeout(function(){$("#message_text").hide()}, 1000);
-    socket.emit('broadcast_message', $( "#message" ).val());    
-   /* 
-    jQuery.ajax({
-        type : "POST",
-        data : {
-            broadcast_message: $( "#broadcast_message" ).val()
-        },
-        url : "/dashboard/broadcast",            
-        dataType : "json",
-        success : function(data) {
-            $( "#broadcast_title" ).prepend($("<span id='message_text'>"+data.message+"</span>"));
-            setTimeout(function(){$("#message_text").hide()}, 1000);
-        }
-    }); 
-    */
+    socket.emit('broadcast_message', $( "#message" ).val());       
 });
