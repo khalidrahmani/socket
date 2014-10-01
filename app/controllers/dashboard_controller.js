@@ -52,9 +52,9 @@ exports.index = function (req, res) {
 }
 
 exports.respond = function(socket){  
-    var address = socket.handshake.address;
+    var remote_ip_address = socket.handshake.address;
     console.log(" ----------------------------------------------------------------------------");
-    console.log(socket);
+    console.log(remote_ip_address);
 	socket.on('update_chart', function (name, fn) {        
         var new_visitors = returning_visitors = 0 ;
 		date = new Date()
