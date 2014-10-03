@@ -3,7 +3,7 @@ var mongoose        = require('mongoose')
    ,moment          = require('moment')
    ,_               = require('underscore')
    ,geoip           = require('geoip-lite')
-   ,users_locations = {};
+   ,users_location  = {};
 
 var allUsers = [];
 exports.index = function (req, res) {	
@@ -58,7 +58,7 @@ exports.respond = function(socket){
     var visitor_ip        = socket.handshake.headers['x-forwarded-for'];
     var url               = socket.handshake.headers.origin;
     var browser_type      = (socket.handshake.headers['user-agent'].indexOf("Mobile") > -1) ? 'Mobile' : 'Desktop';
-    console.log('----------------------------------------------------------------');
+    console.log(visitor_ip + '----------------------------------------------------------------');
     var geo = geoip.lookup(visitor_ip);
     console.log(geo);
     country = geo.country
