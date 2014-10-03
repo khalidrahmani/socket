@@ -2,7 +2,7 @@ var mongoose   = require('mongoose')
    ,Visit      = mongoose.model('Visit')    
    ,moment     = require('moment')
    ,_          = require('underscore')
-
+   ,geoip      = require('geoip-lite');
 
 var allUsers = [];
 exports.index = function (req, res) {	
@@ -54,11 +54,19 @@ exports.index = function (req, res) {
 }
 
 exports.respond = function(socket){  
-    var remote_ip_address = socket.handshake.headers['x-forwarded-for'];
-    var live_url = socket.handshake.headers.origin;
-    var browser_type = (socket.handshake.headers['user-agent'].indexOf("Mobile") > -1) ? 'Mobile' : 'Desktop' ;
-    console.log('----------------------------------------------------------------')
-    console.log(browser_type)
+    var visitor_ip        = socket.handshake.headers['x-forwarded-for'];
+    var url               = socket.handshake.headers.origin;
+    var browser_type      = (socket.handshake.headers['user-agent'].indexOf("Mobile") > -1) ? 'Mobile' : 'Desktop';
+    console.log('----------------------------------------------------------------');
+    var geo = geoip.lookup(visitor_ip);
+    console.log(geo);
+    query = socket.request._query.cookie
+    console.log(query)
+    query = query.split('|')    
+    var logged_in = true;
+    var returning = true;
+    if(query[0] == 'null') {logged_in = false; console.log('not logged in');}
+    if(query[1] == 'null') {returning = false; console.log('new'); }    
     allUsers.push(socket);
     socket.on('disconnect', function () {
         console.log('disconnected')
@@ -82,7 +90,7 @@ exports.respond = function(socket){
 
     });
     /*
-	socket.on('update_chart', function (name, fn) {        
+	socket.on('update_chart', function (name, fn) {      io=xHu6iLUThY4RomVgAAAA;   
         var new_visitors = returning_visitors = 0 ;
 		date = new Date()
 		date.setSeconds(date.getSeconds() - 6)
