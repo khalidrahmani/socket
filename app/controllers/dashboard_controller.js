@@ -1,8 +1,9 @@
-var mongoose   = require('mongoose')
-   ,Visit      = mongoose.model('Visit')    
-   ,moment     = require('moment')
-   ,_          = require('underscore')
-   ,geoip      = require('geoip-lite');
+var mongoose        = require('mongoose')
+   ,Visit           = mongoose.model('Visit')    
+   ,moment          = require('moment')
+   ,_               = require('underscore')
+   ,geoip           = require('geoip-lite')
+   ,users_locations = {};
 
 var allUsers = [];
 exports.index = function (req, res) {	
@@ -60,6 +61,9 @@ exports.respond = function(socket){
     console.log('----------------------------------------------------------------');
     var geo = geoip.lookup(visitor_ip);
     console.log(geo);
+    country = geo.country
+    users_location[country] = users_location[country] || 0
+    users_location[country] += 1;
     query = socket.request._query.cookie
     console.log(query)
     query = query.split('|')    
@@ -71,6 +75,7 @@ exports.respond = function(socket){
     socket.on('disconnect', function () {
         console.log('disconnected')
         var i = allUsers.indexOf(socket)
+        users_location[country] -= 1;
         allUsers.splice(i, 1)        
     });
     
@@ -85,7 +90,7 @@ exports.respond = function(socket){
                 count: allUsers.length, 
                 new_returning_visitors: new_returning_visitors, 
                 live_urls_hit: {}, 
-                users_location: {}
+                users_location: users_location
             });
 
     });
