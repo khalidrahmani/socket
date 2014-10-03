@@ -9,11 +9,13 @@ function getCookie(key, set) {
     if(set == true) setCookie(key, "123", 10000);
     return keyValue ? keyValue[2] : null;
 }
+
 var logedinkookie = getCookie(logged_in_user_cookie);
 var cookie        = getCookie(cook, true);
-var socket = io.connect(websiteUrl,{
+var socket = io.connect(websiteUrl+'/track',{
     query: 'cookie='+logedinkookie+'|'+cookie 
   });
+
 socket.on('broadcast_message', function(message) { 	
  	$("body").append(message)
 });
