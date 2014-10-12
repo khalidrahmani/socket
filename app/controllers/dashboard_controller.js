@@ -4,15 +4,18 @@ var mongoose        = require('mongoose')
    ,_               = require('underscore')
    ,geoip           = require('geoip-lite')
    ,users_location  = {}
-   ,live_urls_hit   = {};
+   ,map             = []
+   ,live_urls_hit   = {}
+   ,time_on_site_since_midnight = 0
+   
 
 var allUsers = [];
 exports.index = function (req, res) {	
-	var  now = new Date()
-        ,time_on_site_since_midnight = 0
+	var  now = new Date()        
         ,visitors_data = []
         ,month_visitors_peack = 0;
 
+    time_on_site_since_midnight = 0
     /*
         hour     = now.getHours()
         minutes  = now.getMinutes()       
@@ -27,12 +30,11 @@ exports.index = function (req, res) {
         Visit.count({ start: {$gte: start}, end: {$lt: end} }).exec(function (err, count) {
             max_count = (count > max_count)? count : max_count;
         })
-    };
+    };   
     */
-
     midnight = now.setHours(0, 0, 0, 0)
-    var last_month = new Date();
-    last_month.setMonth(last_month.getMonth() - 1);
+    var last_month = new Date()
+    last_month.setMonth(last_month.getMonth() - 1)
     mvp = [];    
     Visit.find({ start: {$gte: last_month} }).exec(function (err, visits) {
         for (var i = 0;i<visits.length;i++){
@@ -40,55 +42,41 @@ exports.index = function (req, res) {
             mvp[index] = mvp[index] || 0;
             mvp[index] += 1;
             if(mvp[index] > month_visitors_peack ) month_visitors_peack = mvp[index]
-        }        
-        Visit.find({ end: {$gte: midnight} }).exec(function (err, visits) {
-            for (var key in visits) {
-                time_on_site_since_midnight   +=  moment(visits[key].end).diff(moment(visits[key].start), 'seconds');
-            } 
-            time_on_site_since_midnight = moment(moment({ seconds: time_on_site_since_midnight }));
-            time_on_site_since_midnight = time_on_site_since_midnight.hour() + "H:" + time_on_site_since_midnight.minute()+"M";
-        	res.render('dashboard/index', {            	
-                time_on_site_since_midnight: time_on_site_since_midnight,
-                month_visitors_peack: month_visitors_peack
-        	})
-    	})
+        }    
+    Visit.find({ end: {$gte: midnight} }).exec(function (err, visits) {
+        for (var key in visits) {
+            console.log(visits[key].end)
+            time_on_site_since_midnight   +=  moment(visits[key].end).diff(moment(visits[key].start), 'seconds');
+        } 
+        console.log(time_on_site_since_midnight)
+        res.render('dashboard/index', {             
+            time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight }))),
+            month_visitors_peack: month_visitors_peack
+        })
     })  
+        })   
 }
 
-exports.respond = function(socket, io){  
-    socket.on('update_chart', function (name, fn) {
-        var new_visitors = returning_visitors = 0 ;
-        var live_users_count = allUsers.length
-        allUsers
-        date = new Date()
-        //date.setSeconds(date.getSeconds() - 6)
-        _date = format(date.getHours())+":"+format(date.getMinutes())+":"+format(date.getSeconds())
-        visitors_data  = getVisitorsType(live_users_count, allUsers)
-        fn({    date: _date, 
-                count: live_users_count, 
-                new_returning_visitors: visitors_data[0], 
-                desktop_mobile: visitors_data[1], 
-                live_urls_hit: live_urls_hit, 
-                users_location: users_location
-            })
-    })
-    socket.on('broadcast_message', function (message, fn) { 
-        io.of('track').emit('broadcast_message', message);
-    })
-}
-
-exports.track = function(socket){  
+exports.track = function(socket, io){  
     var visitor_ip          = socket.handshake.headers['x-forwarded-for']    
        ,url                 = socket.handshake.headers.origin
        
-    visitor_ip              = '197.247.236.119';
+    //visitor_ip              = '107.4.145.158' // '197.247.236.119' // // ;
     console.log(visitor_ip + '----------------------------------------------------------------');
     var geo                 = geoip.lookup(visitor_ip);
-    country = geo.country
-    users_location[country] = users_location[country] || 0
-    users_location[country] += 1;
-    live_urls_hit[url] = live_urls_hit[url] || 0
-    live_urls_hit[url] += 1;
+    console.log(geo)
+    socket.geo = geo
+    if(geo)
+    {
+        country = geo.country+' '+geo.city
+        map.push({ latLng: [geo.ll[0], geo.ll[1]], name: country })
+        console.log(map)        
+        if(users_location[country]) users_location[country] += 1;
+        else users_location[country] = 1;
+    }
+    if(live_urls_hit[url]) live_urls_hit[url] += 1;
+    else live_urls_hit[url] =  1;
+    
     query = socket.request._query.cookie
     console.log(query)
     query = query.split('|')  
@@ -98,15 +86,54 @@ exports.track = function(socket){
     allUsers.push(socket);
     socket.on('disconnect', function () {
         console.log('disconnected')
-        var i = allUsers.indexOf(socket)
-        users_location[country] -= 1
+        start_date = new Date(socket.handshake.time)
+        mobile = (socket.handshake.headers['user-agent'].indexOf("Mobile") > -1)
+        Visit.create({start: start_date, url: url, mobile: mobile}, function (err) {  })        
         live_urls_hit[url] -= 1
+        var i = allUsers.indexOf(socket)
         allUsers.splice(i, 1)
-    });    
+        if(socket.geo){      
+            users_location[country] -= 1      
+            for(key in map){
+                if(map[key].latLng[0] == socket.geo.ll[0] && map[key].latLng[1] == socket.geo.ll[1]){
+                    console.log(map[key].latLng[0] + " =  " +  socket.geo.ll[0])
+                    map.splice(key, 1)      
+                }                
+            }             
+        }
+    });  
+    socket.on('alert', function (message, fn) {
+        console.log(message)
+        io.of('app').emit('alert', message);
+    })
 }
 
+exports.app = function(socket, io){
+    socket.on('update_chart', function (name, fn) {
+        var new_visitors = returning_visitors = 0
+        var live_users_count = allUsers.length
+        console.log(time_on_site_since_midnight)
+        time_on_site_since_midnight = time_on_site_since_midnight + live_users_count*10
+        console.log(map)
+        date = new Date()
+        _date = format(date.getHours())+":"+format(date.getMinutes())+":"+format(date.getSeconds())
+        visitors_data  = getVisitorsData(live_users_count, allUsers)
+        fn({    date: _date,    
+                count: live_users_count,
+                new_returning_visitors: visitors_data[0],
+                desktop_mobile: visitors_data[1],
+                live_urls_hit: live_urls_hit,
+                users_location: users_location,
+                map: map,
+                time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight })))
+            })
+    })
+    socket.on('broadcast_message', function (message, fn) { 
+        io.of('track').emit('broadcast_message', message);
+    })
+}
 
-function getVisitorsType(live_users_count, SocketsArray){
+function getVisitorsData(live_users_count, SocketsArray){
     new_visitors_count = returning_visitors_count = logged_in_visitos_count = desktop_count = mobile_count = 0 ;
     SocketsArray.forEach(function(socket) {
         if(socket.logged_in) logged_in_visitos_count+=1;
@@ -131,7 +158,9 @@ function formatMinutes(i){
     return format(i)+":30";
 } 
 
-
+function formatDate(time){
+    return time.hour() + "H:" + time.minute()+"M";
+}
 
 
 

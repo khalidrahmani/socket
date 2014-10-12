@@ -37,11 +37,11 @@ server.listen(port);
 
 var dashboard_controller = require('./app/controllers/dashboard_controller');
 
-io.sockets.on('connection', function (socket) { // io.of('/track').on('connection', function (socket) {
-    dashboard_controller.respond(socket, io);
+io.of('/app').on('connection', function (socket) { // io.of('/track').on('connection', function (socket) {
+    dashboard_controller.app(socket, io);
 });
 io.of('/track').on('connection', function (socket) {
-    dashboard_controller.track(socket);
+    dashboard_controller.track(socket, io);
 });
 
 console.log('Express app started on port '+port)

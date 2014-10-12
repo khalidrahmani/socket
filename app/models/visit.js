@@ -3,7 +3,7 @@ var mongoose = require('mongoose')
    ,Schema   = mongoose.Schema  
 
 var VisitSchema = new Schema({
-   start:             { type: Date, default : Date.now }
+   start:             { type: Date }
   ,end:               { type: Date, default : Date.now }  
   ,mobile:            { type: Boolean }  
   ,url:               { type: String }

@@ -18,6 +18,8 @@
     <!-- Custom styles for this template -->
     <link href="css/style.css" rel="stylesheet">
     <link href="css/style-responsive.css" rel="stylesheet"/>
+    <link href="css/jquery-jvectormap-1.2.2.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="js/gritter/css/jquery.gritter.css" />
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]>
     <script src="js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -86,8 +88,8 @@
             <div class="mini-stat clearfix">
                 <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
                 <div class="mini-stat-info">
-                    <span><%= time_on_site_since_midnight %></span>
-                    Time on site since midnight
+                    <span id="engagement_time"><%= time_on_site_since_midnight %></span>
+                    Total engagement
                 </div>
             </div>
         </div>
@@ -99,16 +101,7 @@
                     Month high visitors
                 </div>
             </div>
-        </div>
-        <div class="col-md-3">
-            <div class="mini-stat clearfix">
-                <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
-                <div class="mini-stat-info">
-                    <span>0</span>
-                    Total engagement of the day
-                </div>
-            </div>
-        </div>    
+        </div>   
     </div>
 
     <div class="row">
@@ -156,10 +149,7 @@
                 </div>
             </section>
         </div> 
-    </div>
-
-    <div class="row">
-        <div class="col-sm-6">
+                <div class="col-sm-6">
             <section class="panel">
                 <header class="panel-heading">
                     Live Visited URLs                            
@@ -180,7 +170,14 @@
 
             </section>
         </div>
-        <div class="col-sm-6">
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-8" id="visitors-map" style="height: 400px">
+        
+         </div>
+        <div class="col-sm-4">
             <section class="panel">
                 <header class="panel-heading">
                     Live Visitor Location
@@ -236,6 +233,10 @@
 <!--Morris Chart-->
 <script src="js/morris-chart/morris.min.js"></script>
 <script src="js/morris-chart/raphael-min.js"></script>
+
+<script src="js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+<script src="js/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+<script type="text/javascript" src="js/gritter/js/jquery.gritter.js"></script>
 <!--jQuery Flot Chart-->
 <!--script src="js/flot-chart/jquery.flot.js"></script>
 <script src="js/flot-chart/jquery.flot.tooltip.min.js"></script>
