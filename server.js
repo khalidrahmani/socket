@@ -29,8 +29,15 @@ app.use(function (req, res, next) {
 })
 
 require('./config/express')(app, config, passport)
+var sslOptions = {
+  key: fs.readFileSync('./ssl/server.key'),
+  cert: fs.readFileSync('./ssl/server.crt'),
+  ca: fs.readFileSync('./ssl/ca.crt'),
+  requestCert: true,
+  rejectUnauthorized: false
+};
 
-var server = require('http').Server(app);
+var server = require('https').Server(sslOptions, app);
 var io = require('socket.io')(server);
 require('./config/routes')(app, passport)
 server.listen(port);
