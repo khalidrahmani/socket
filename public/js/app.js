@@ -1,4 +1,5 @@
-var live_users_chart, new_returning_logedin_visitors_chart, mobile_desktop_chart, urls_hit, locations, mapObject;
+var live_users_chart, new_returning_logedin_visitors_chart, mobile_desktop_chart, 
+    urls_hit, locations, mapObject, gauge, graph_data;
 (function ($) {
     "use strict";                     
 
@@ -17,10 +18,11 @@ var live_users_chart, new_returning_logedin_visitors_chart, mobile_desktop_chart
     markers: []
     });
 
-    if (Morris.EventEmitter) {            
+    if (Morris.EventEmitter) {    
+            graph_data = $("#graph-area").data("visitors")
             live_users_chart = Morris.Line({
                 element: 'graph-area',
-                data:   [],
+                data:   graph_data,
                 xkey: 'x',
                 ykeys: ['value'],
                 labels: ['value'],
@@ -42,8 +44,35 @@ var live_users_chart, new_returning_logedin_visitors_chart, mobile_desktop_chart
               ]
             });            
         }
+if (Gauge) {
+    /*Knob*/
+    var opts = {
+        lines: 12, // The number of lines to draw
+        angle: 0, // The length of each line
+        lineWidth: 0.48, // The line thickness
+        pointer: {
+            length: 0.6, // The radius of the inner circle
+            strokeWidth: 0.03, // The rotation offset
+            color: '#464646' // Fill color
+        },
+        limitMax: 'true', // If true, the pointer will not go past the end of the gauge
+        colorStart: '#fa8564', // Colors
+        colorStop: '#fa8564', // just experiment with them
+        strokeColor: '#F1F1F1', // to see which ones work best for you
+        generateGradient: true
+    };
 
-var visitors_data = []
+
+    var target = document.getElementById('gauge'); // your canvas element
+    gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
+    gauge.maxValue = 30000; // set max gauge value
+    gauge.animationSpeed = 32; // set animation speed (32 is default value)
+    gauge.set($( "#gauge" ).data( "value" )); // set actual value
+    gauge.setTextField(document.getElementById("gauge-textfield"));
+}
+
+
+//var visitors_data = []
 var websiteURL = window.location.protocol + "//" + window.location.host 
 var socket = io.connect(websiteURL+'/app')
 mapObject = $('#visitors-map').vectorMap('get', 'mapObject');
@@ -51,10 +80,13 @@ mapObject = $('#visitors-map').vectorMap('get', 'mapObject');
 socket.on('connect', function () { 
     setInterval(function(){
       socket.emit('update_chart', 'd', function (data) {
-        if(visitors_data.length > 20) visitors_data.splice(0,1); 
-        $("#engagement_time").html(data.time_on_site_since_midnight)
-        visitors_data.push({"x": data.date, "value": data.count})
-        live_users_chart.setData(visitors_data);
+        if(graph_data.length > 20) graph_data.splice(0,1); 
+        $("#gauge-textfield").html(data.time_on_site_since_midnight)
+        $("#formated_time_on_site").html(data.formated_time_on_site_since_midnight)
+
+        gauge.set(data.time_on_site_since_midnight);
+        graph_data.push({"x": data.date, "value": data.count})
+        live_users_chart.setData(graph_data);
         new_returning_logedin_visitors_chart.setData(data.new_returning_visitors);  
         desktop_mobile_chart.setData(data.desktop_mobile);  
         urls_hit = "";        

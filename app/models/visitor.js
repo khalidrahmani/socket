@@ -1,10 +1,10 @@
 
 var mongoose = require('mongoose')
    ,Schema   = mongoose.Schema  
-   ,geoip    = require('geoip-lite')
+  // ,geoip    = require('geoip-lite')
 
 var VisitorSchema = new Schema({
-   ip:                { type: String, required: "can't be blank" }
+   ip:                { type: String }
   ,city:              { type: String }
   ,state:             { type: String }
   ,country:           { type: String }
@@ -12,7 +12,7 @@ var VisitorSchema = new Schema({
   ,first_visit:       { type : Date, default : Date.now }
   ,last_visit:        { type : Date, default : Date.now }
 })
-
+/*
 VisitorSchema.pre('save', function(next) {
   geo = geoip.lookup(this.ip)
   if( geo != null ){
@@ -22,5 +22,5 @@ VisitorSchema.pre('save', function(next) {
   }
   next()
 })
-
+*/
 mongoose.model('Visitor', VisitorSchema)

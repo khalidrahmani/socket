@@ -83,16 +83,30 @@
 <section id="main-content">
 <section class="wrapper">
 
-    <div class="row">
-        <div class="col-md-3">
-            <div class="mini-stat clearfix">
-                <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
-                <div class="mini-stat-info">
-                    <span id="engagement_time"><%= time_on_site_since_midnight %></span>
-                    Total engagement
+<div class="row">
+    <div class="col-md-3">
+        <section class="panel">
+            <div class="panel-body">
+                <div class="top-stats-panel">
+                    <div class="gauge-canvas">
+                        <h4 class="widget-h">Total Engagement</h4>
+                        <canvas id="gauge" height="100" width="160" data-value="<%= time_on_site_since_midnight %>"></canvas>
+                    </div>
+                    <ul class="gauge-meta clearfix">
+                        <li class="pull-left gauge-value" id="gauge-textfield"><%= time_on_site_since_midnight %></li>
+                        <li class="pull-right gauge-title" id="formated_time_on_site"> <%= formated_time_on_site_since_midnight %></li>
+                    </ul>
                 </div>
             </div>
-        </div>
+        </section>
+    </div>
+    
+ 
+
+</div>
+
+    <div class="row">
+
         <div class="col-md-3">
             <div class="mini-stat clearfix">
                 <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
@@ -112,7 +126,8 @@
                     Live Visitors
                 </header>
                 <div class="panel-body">
-                    <div id="graph-area" class="main-chart" >
+                    <div id="graph-area" class="main-chart" 
+                    data-visitors='<%- JSON.stringify(graph_data) %>'>
                     </div>
                 </div>
             </section>
@@ -227,7 +242,7 @@
 <!--[if lte IE 8]><script language="javascript" type="text/javascript" src="js/flot-chart/excanvas.min.js"></script><![endif]-->
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.2/underscore-min.js"></script>
 <!--Easy Pie Chart-->
 <script src="js/easypiechart/jquery.easypiechart.js"></script>
 <!--Morris Chart-->
@@ -237,6 +252,9 @@
 <script src="js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
 <script src="js/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
 <script type="text/javascript" src="js/gritter/js/jquery.gritter.js"></script>
+
+<script type="text/javascript" src="js/gauge/gauge.min.js"></script>
+
 <!--jQuery Flot Chart-->
 <!--script src="js/flot-chart/jquery.flot.js"></script>
 <script src="js/flot-chart/jquery.flot.tooltip.min.js"></script>
