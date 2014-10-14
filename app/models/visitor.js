@@ -8,7 +8,6 @@ var VisitorSchema = new Schema({
   ,city:              { type: String }
   ,state:             { type: String }
   ,country:           { type: String }
-  ,visits:            { type: Number, default : 1 }  
   ,first_visit:       { type : Date, default : Date.now }
   ,last_visit:        { type : Date, default : Date.now }
 })

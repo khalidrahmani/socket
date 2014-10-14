@@ -20,9 +20,6 @@ exports.index = function (req, res) {
         hours = []
         hour     = now.getHours()
         time_on_site_since_midnight = 0
-        //for (i = 0; i <= hour; i++){
-        //    hours.push(i)
-        //}
 
         getGraphData(0, hour, function(){
                 midnight = now.setHours(0, 0, 0, 0)
@@ -48,88 +45,14 @@ exports.index = function (req, res) {
                         })
                     })  
                 })
-        })
+        }) 
+}
 
-/*
-        //minutes  = now.getMinutes()
-        for (i = 0; i <= hour; i++){
-            hours.push(i)
-            //graph_data.push({"x": format(i), "value": i*2})
-            //if(i != hour || minutes > 30) graph_data.push({"x": formatMinutes(i), "value": i*2})
-        }  
-        console.log(hours)
-        async.each(hours, function(hour, callback){
-            date = now.setHours(hour)
-            console.log(date)
-           // Visit.count({ }, function (err, count) { //  start: {$lt: date}, end: {$gte: date}
-              //  if(err) console.log(err)
-                console.log(hour)
-                graph_data.push({"x": format(hour), "value": 4});
-                //console.log(graph_data)
-                 
-            //});
-            callback();
-          },
-          function(err){
-            console.log("render")
-                midnight = now.setHours(0, 0, 0, 0)
-                var last_month = new Date()
-                last_month.setMonth(last_month.getMonth() - 1)
-                mvp = [];    
-                Visit.find({ start: {$gte: last_month} }).exec(function (err, visits) {
-                    for (var i = 0;i<visits.length;i++){
-                        index = visits[i].start.getDay()+"-"+visits[i].start.getMonth()
-                        mvp[index] = mvp[index] || 0;
-                        mvp[index] += 1;
-                        if(mvp[index] > month_visitors_peack ) month_visitors_peack = mvp[index]
-                    }    
-                    Visit.find({ end: {$gte: midnight} }).exec(function (err, visits) {
-                        for (var key in visits) {
-                            time_on_site_since_midnight   +=  moment(visits[key].end).diff(moment(visits[key].start), 'seconds');
-                        } 
-                        res.render('dashboard/index', {             
-                            time_on_site_since_midnight: time_on_site_since_midnight, 
-                            formated_time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight }))),
-                            month_visitors_peack: month_visitors_peack,
-                            graph_data: graph_data
-                        })
-                    })  
-                })
-            }
-        );
-*/
-        
-    /*for (var i = 0; i < 30; i++) {
-        start =   now.setDays(now.getDays()-i);
-        end   =   now.setDays(now.getDays()-i-1);
-        Visit.count({ start: {$gte: start}, end: {$lt: end} }).exec(function (err, count) {
-            max_count = (count > max_count)? count : max_count;
-        })
-    };   
-    */
-   
-}
-function getGraphData(start, hour, cb){
-    if(hour >= start ){
-        date = new Date() 
-        date.setHours(start)
-        date.setMinutes(0)
-        date.setSeconds(0)
-        Visit.count({start: {$lt: date}, end: {$gte: date}}, function (err, count) {
-            console.log("start : "+ start)
-            console.log(date)
-            console.log("count :"+ count)
-            graph_data.push({"x": format(start), "value": count}); 
-            getGraphData(start+1, hour, cb)      
-        })
-    }
-    else cb()
-}
 exports.track = function(socket, io){  
     var visitor_ip          = socket.handshake.headers['x-forwarded-for']    
        ,url                 = socket.handshake.headers.origin
        
-    visitor_ip              = '107.4.145.158' // '197.247.236.119' // // ;
+    //visitor_ip              = '107.4.145.158' // '197.247.236.119' // // ;
     console.log(visitor_ip + '----------------------------------------------------------------');
     var geo                 = geoip.lookup(visitor_ip);
     console.log(geo)
@@ -147,8 +70,12 @@ exports.track = function(socket, io){
     query = socket.request._query.cookie
     console.log(query)
     query = query.split('|')  
-    if(query[0] != 'null') { socket.logged_in = true; }
+    if(query[0] != 'null') { 
+        socket.logged_in = true; 
+        socket.cart = query[2];
+    }
     if(query[1] != 'null') { socket.returning = true; }   
+    
     else { 
         visitor = new Visitor()
         visitor.ip = visitor_ip
@@ -156,18 +83,19 @@ exports.track = function(socket, io){
             if(err) console.log(err)
             else{
                socket.visitor_id = rec.id
-               socket.emit('visitor', rec.id)         
-            }           
-        });        
-    } 
-
-    allUsers.push(socket);   
+               socket.emit('visitor', rec.id)
+            }
+        });
+    }
+    allUsers.push(socket);
     
     socket.on('disconnect', function () {
         console.log('disconnected')
         start_date = new Date(socket.handshake.time)
         mobile = (socket.handshake.headers['user-agent'].indexOf("Mobile") > -1)
-        Visit.create({visitor: socket.visitor_id, start: start_date, url: url, mobile: mobile}, function (err) {  })        
+        attributes = {visitor: socket.visitor_id, start: start_date, url: url, mobile: mobile}
+        if(socket.cart){ attributes.cart = socket.cart }
+        Visit.create(attributes, function (err) {  })
         live_urls_hit[url] -= 1
         var i = allUsers.indexOf(socket)
         allUsers.splice(i, 1)
@@ -242,10 +170,22 @@ function formatDate(time){
     return time.hour() + "H:" + time.minute()+"M";
 }
 
-
-
-
-
+function getGraphData(start, hour, cb){
+    if(hour >= start ){
+        date = new Date() 
+        date.setHours(start)
+        date.setMinutes(0)
+        date.setSeconds(0)
+        Visit.count({start: {$lt: date}, end: {$gte: date}}, function (err, count) {
+            console.log("start : "+ start)
+            console.log(date)
+            console.log("count :"+ count)
+            graph_data.push({"x": format(start), "value": count}); 
+            getGraphData(start+1, hour, cb)      
+        })
+    }
+    else cb()
+}
 
 /*
     socket.on('update_chart', function (name, fn) {      io=xHu6iLUThY4RomVgAAAA;   

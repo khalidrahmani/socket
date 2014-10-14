@@ -65,7 +65,7 @@ if (Gauge) {
 
     var target = document.getElementById('gauge'); // your canvas element
     gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
-    gauge.maxValue = 30000; // set max gauge value
+    gauge.maxValue = 100000; // set max gauge value
     gauge.animationSpeed = 32; // set animation speed (32 is default value)
     gauge.set($( "#gauge" ).data( "value" )); // set actual value
     gauge.setTextField(document.getElementById("gauge-textfield"));
@@ -80,7 +80,7 @@ mapObject = $('#visitors-map').vectorMap('get', 'mapObject');
 socket.on('connect', function () { 
     setInterval(function(){
       socket.emit('update_chart', 'd', function (data) {
-        if(graph_data.length > 20) graph_data.splice(0,1); 
+        if(graph_data.length > 25) graph_data.splice(0,1); 
         $("#gauge-textfield").html(data.time_on_site_since_midnight)
         $("#formated_time_on_site").html(data.formated_time_on_site_since_midnight)
 
