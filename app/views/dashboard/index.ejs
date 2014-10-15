@@ -90,6 +90,24 @@
             </div>
         </section>
     </div>
+    <div class="col-md-3">
+        <section class="panel">
+            <div class="panel-body">
+                <div class="top-stats-panel">
+                    <div class="gauge-canvas">
+                        <h4 class="widget-h">Total Items In Cart</h4>
+                        <canvas id="cart" height="100" width="160" data-value="<%= total_items_in_cart %>"></canvas>
+                    </div>
+                    <ul class="gauge-meta clearfix">
+                        <li class="pull-left gauge-value" id="cart-textfield">
+                        <%= total_items_in_cart %></li>
+                        <li class="pull-right gauge-title">
+                        Articles</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>    
 </div>
     <div class="row">
         <div class="col-md-3">

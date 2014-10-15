@@ -9,7 +9,7 @@ function getCookie(key) {
     return keyValue ? keyValue[2] : null;
 }
 
-window.onload=function(){ 
+window.onload=function(){
 	var logedincookie 				= getCookie(app_cookie); // logged_in_user_cookie
 	var visitor_id    				= getCookie(app_cookie);
 	var total_items_incart          = document.getElementById('total_items_incart').innerHTML

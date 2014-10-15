@@ -5,6 +5,7 @@ var mongoose = require('mongoose')
 
 var VisitorSchema = new Schema({
    ip:                { type: String }
+  ,cart:              { type: Number, default : 0 }
   ,city:              { type: String }
   ,state:             { type: String }
   ,country:           { type: String }

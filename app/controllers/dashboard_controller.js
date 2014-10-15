@@ -10,7 +10,7 @@ var mongoose        = require('mongoose')
    ,live_urls_hit   = {}
    ,graph_data      = []
    ,time_on_site_since_midnight = 0
-   
+   ,total_items_in_cart = 300
 
 var allUsers = [];
 exports.index = function (req, res) {	
@@ -21,34 +21,39 @@ exports.index = function (req, res) {
         hour     = now.getHours()
         time_on_site_since_midnight = 0
 
+
+      Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
+        total_items_in_cart = results[0].count
         getGraphData(0, hour, function(){
-                midnight = now.setHours(0, 0, 0, 0)
-                var last_month = new Date()
-                last_month.setMonth(last_month.getMonth() - 1)
-                mvp = [];    
-                Visit.find({ start: {$gte: last_month} }).exec(function (err, visits) {
-                    for (var i = 0;i<visits.length;i++){
-                        index = visits[i].start.getDay()+"-"+visits[i].start.getMonth()
-                        mvp[index] = mvp[index] || 0;
-                        mvp[index] += 1;
-                        if(mvp[index] > month_visitors_peack ) month_visitors_peack = mvp[index]
-                    }    
-                    Visit.find({ end: {$gte: midnight} }).exec(function (err, visits) {
-                        for (var key in visits) {
-                            time_on_site_since_midnight   +=  moment(visits[key].end).diff(moment(visits[key].start), 'seconds');
-                        } 
-                        res.render('dashboard/index', {             
-                            time_on_site_since_midnight: time_on_site_since_midnight, 
-                            formated_time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight }))),
-                            month_visitors_peack: month_visitors_peack,
-                            graph_data: graph_data
-                        })
-                    })  
-                })
-        }) 
+            midnight = now.setHours(0, 0, 0, 0)
+            var last_month = new Date()
+            last_month.setMonth(last_month.getMonth() - 1)
+            mvp = [];    
+            Visit.find({ start: {$gte: last_month} }).exec(function (err, visits) {
+                for (var i = 0;i<visits.length;i++){
+                    index = visits[i].start.getDay()+"-"+visits[i].start.getMonth()
+                    mvp[index] = mvp[index] || 0;
+                    mvp[index] += 1;
+                    if(mvp[index] > month_visitors_peack ) month_visitors_peack = mvp[index]
+                }    
+                Visit.find({ end: {$gte: midnight} }).exec(function (err, visits) {
+                    for (var key in visits) {
+                        time_on_site_since_midnight   +=  moment(visits[key].end).diff(moment(visits[key].start), 'seconds');
+                    } 
+                    res.render('dashboard/index', {             
+                        time_on_site_since_midnight: time_on_site_since_midnight, 
+                        formated_time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight }))),
+                        month_visitors_peack: month_visitors_peack,
+                        graph_data: graph_data,
+                        total_items_in_cart: total_items_in_cart
+                    })
+                })  
+            })
+        })
+     })
 }
 
-exports.track = function(socket, io){  
+exports.track = function(socket, io){
     var visitor_ip          = socket.handshake.headers['x-forwarded-for']    
        ,url                 = socket.handshake.headers.origin
        
@@ -74,8 +79,10 @@ exports.track = function(socket, io){
         socket.logged_in = true; 
         socket.cart = query[2];
     }
-    if(query[1] != 'null') { socket.returning = true; }   
-    
+    if(query[1] != 'null') { 
+        socket.visitor_id = query[1];
+        socket.returning = true; 
+    }   
     else { 
         visitor = new Visitor()
         visitor.ip = visitor_ip
@@ -93,9 +100,10 @@ exports.track = function(socket, io){
         console.log('disconnected')
         start_date = new Date(socket.handshake.time)
         mobile = (socket.handshake.headers['user-agent'].indexOf("Mobile") > -1)
-        attributes = {visitor: socket.visitor_id, start: start_date, url: url, mobile: mobile}
-        if(socket.cart){ attributes.cart = socket.cart }
-        Visit.create(attributes, function (err) {  })
+        if(socket.cart){ 
+            Visitor.update({_id : socket.visitor_id}, { cart: socket.cart }, function(){})            
+        }
+        Visit.create({visitor: socket.visitor_id, start: start_date, url: url, mobile: mobile}, function (err) {  })
         live_urls_hit[url] -= 1
         var i = allUsers.indexOf(socket)
         allUsers.splice(i, 1)
@@ -125,7 +133,11 @@ exports.app = function(socket, io){
         date = new Date()
         _date = format(date.getHours())+":"+format(date.getMinutes())+":"+format(date.getSeconds())
         visitors_data  = getVisitorsData(live_users_count, allUsers)
-        fn({    date: _date,    
+
+        Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
+            total_items_in_cart = results[0].count
+            fn({
+                date: _date,    
                 count: live_users_count,
                 new_returning_visitors: visitors_data[0],
                 desktop_mobile: visitors_data[1],
@@ -133,8 +145,10 @@ exports.app = function(socket, io){
                 users_location: users_location,
                 map: map,
                 time_on_site_since_midnight: time_on_site_since_midnight,
-                formated_time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight })))
+                formated_time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight }))),
+                total_items_in_cart: total_items_in_cart
             })
+        })
     })
     socket.on('broadcast_message', function (message, fn) { 
         io.of('track').emit('broadcast_message', message);
@@ -176,12 +190,9 @@ function getGraphData(start, hour, cb){
         date.setHours(start)
         date.setMinutes(0)
         date.setSeconds(0)
-        Visit.count({start: {$lt: date}, end: {$gte: date}}, function (err, count) {
-            console.log("start : "+ start)
-            console.log(date)
-            console.log("count :"+ count)
-            graph_data.push({"x": format(start), "value": count}); 
-            getGraphData(start+1, hour, cb)      
+        Visit.find({start: {$lt: date}, end: {$gte: date}}, function (err, visits) {
+            graph_data.push({"x": format(start), "value": visits.length});
+            getGraphData(start+1, hour, cb)
         })
     }
     else cb()

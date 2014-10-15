@@ -1,5 +1,5 @@
 var live_users_chart, new_returning_logedin_visitors_chart, mobile_desktop_chart, 
-    urls_hit, locations, mapObject, gauge, graph_data;
+    urls_hit, locations, mapObject, gauge, graph_data, cart_gauge;
 (function ($) {
     "use strict";                     
 
@@ -25,8 +25,7 @@ var live_users_chart, new_returning_logedin_visitors_chart, mobile_desktop_chart
                 data:   graph_data,
                 xkey: 'x',
                 ykeys: ['value'],
-                labels: ['value'],
-                lineColors:['#1FB5AD'],
+                labels: ['value'],                
                 parseTime: false
             });         
             new_returning_logedin_visitors_chart = Morris.Donut({
@@ -69,6 +68,13 @@ if (Gauge) {
     gauge.animationSpeed = 32; // set animation speed (32 is default value)
     gauge.set($( "#gauge" ).data( "value" )); // set actual value
     gauge.setTextField(document.getElementById("gauge-textfield"));
+
+    var cart_gauge = document.getElementById('cart'); // your canvas element
+    cart_gauge = new Gauge(cart_gauge).setOptions(opts); // create sexy gauge!
+    cart_gauge.maxValue = 1000; // set max gauge value
+    cart_gauge.animationSpeed = 32; // set animation speed (32 is default value)
+    cart_gauge.set($( "#cart" ).data( "value" )); // set actual value
+    cart_gauge.setTextField(document.getElementById("cart-textfield"));    
 }
 
 
@@ -85,6 +91,9 @@ socket.on('connect', function () {
         $("#formated_time_on_site").html(data.formated_time_on_site_since_midnight)
 
         gauge.set(data.time_on_site_since_midnight);
+        $("#cart-textfield").html(data.total_items_in_cart);
+        cart_gauge.set(data.total_items_in_cart);
+
         graph_data.push({"x": data.date, "value": data.count})
         live_users_chart.setData(graph_data);
         new_returning_logedin_visitors_chart.setData(data.new_returning_visitors);  
