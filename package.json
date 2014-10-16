@@ -52,7 +52,6 @@
     ,"underscore": "latest"
     ,"geoip-lite": "latest"
     ,"request": "latest"    
-    ,"pagination": "https://github.com/khalidrahmani/pagination/tarball/master" 
     ,"express-xml-bodyparser": "latest" 
     ,"socket.io": "latest"   
 

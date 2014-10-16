@@ -2,7 +2,7 @@
 var express = require('express')
    ,fs = require('fs')
    ,passport = require('passport')
-   ,port = process.env.PORT || 3000
+   ,port = process.env.PORT || 3001
 
 var env = process.env.NODE_ENV || 'development'
   , config = require('./config/config')[env]
