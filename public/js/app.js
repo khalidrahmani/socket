@@ -96,8 +96,8 @@ socket.on('connect', function () {
 
         graph_data.push({"x": data.date, "value": data.count})
         live_users_chart.setData(graph_data);
-        new_returning_logedin_visitors_chart.setData(parseInt(data.new_returning_visitors));  
-        desktop_mobile_chart.setData(parseInt(data.desktop_mobile));  
+        new_returning_logedin_visitors_chart.setData(data.new_returning_visitors);  
+        desktop_mobile_chart.setData(data.desktop_mobile);  
         urls_hit = "";        
         locations = "";
         for(var prop in data.live_urls_hit){ 
