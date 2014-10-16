@@ -21,7 +21,6 @@ exports.index = function (req, res) {
         hour     = now.getHours()
         time_on_site_since_midnight = 0
 
-
       Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
         total_items_in_cart = results[0].count
         getGraphData(0, hour, function(){
@@ -157,13 +156,20 @@ exports.app = function(socket, io){
 
 function getVisitorsData(live_users_count, SocketsArray){
     new_visitors_count = returning_visitors_count = logged_in_visitos_count = desktop_count = mobile_count = 0 ;
-    SocketsArray.forEach(function(socket) {
-        if(socket.logged_in) logged_in_visitos_count+=1;
-        else if(socket.returning) returning_visitors_count+=1;
-        if(socket.handshake.headers['user-agent'].indexOf("Mobile") > -1) mobile_count+=1;
-    });
-    new_visitors_count =  live_users_count - returning_visitors_count - logged_in_visitos_count   
-    desktop_count = live_users_count - mobile_count
+    if(live_users_count == 0){
+        new_visitors_count = returning_visitors_count = logged_in_visitos_count = desktop_count = mobile_count = 50 ;
+    }
+    else{
+
+        SocketsArray.forEach(function(socket) {
+            if(socket.logged_in) logged_in_visitos_count+=1;
+            else if(socket.returning) returning_visitors_count+=1;
+            if(socket.handshake.headers['user-agent'].indexOf("Mobile") > -1) mobile_count+=1;
+        });
+        new_visitors_count =  live_users_count - returning_visitors_count - logged_in_visitos_count   
+        desktop_count = live_users_count - mobile_count
+    }
+    
     return [[ {label: "New Visitors", value: new_visitors_count}, 
              {label: "Returning Visitors", value: returning_visitors_count},
              {label: "Logged in visitors", value: logged_in_visitos_count} ], 

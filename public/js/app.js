@@ -44,41 +44,37 @@ var live_users_chart, new_returning_logedin_visitors_chart, desktop_mobile_chart
             });            
         }
 if (Gauge) {
-    /*Knob*/
     var opts = {
-        lines: 12, // The number of lines to draw
-        angle: 0, // The length of each line
-        lineWidth: 0.48, // The line thickness
+        lines: 12, 
+        angle: 0, 
+        lineWidth: 0.48, 
         pointer: {
-            length: 0.6, // The radius of the inner circle
-            strokeWidth: 0.03, // The rotation offset
-            color: '#464646' // Fill color
+            length: 0.6, 
+            strokeWidth: 0.03, 
+            color: '#464646' 
         },
-        limitMax: 'true', // If true, the pointer will not go past the end of the gauge
-        colorStart: '#fa8564', // Colors
-        colorStop: '#fa8564', // just experiment with them
-        strokeColor: '#F1F1F1', // to see which ones work best for you
+        limitMax: 'true', 
+        colorStart: '#fa8564', 
+        colorStop: '#fa8564', 
+        strokeColor: '#F1F1F1', 
         generateGradient: true
     };
 
-
-    var target = document.getElementById('gauge'); // your canvas element
-    gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
-    gauge.maxValue = 100000; // set max gauge value
-    gauge.animationSpeed = 32; // set animation speed (32 is default value)
-    gauge.set($( "#gauge" ).data( "value" )); // set actual value
+    var target = document.getElementById('gauge'); 
+    gauge = new Gauge(target).setOptions(opts); 
+    gauge.maxValue = 500000;
+    gauge.animationSpeed = 32;
+    gauge.set($( "#gauge" ).data( "value" ));
     gauge.setTextField(document.getElementById("gauge-textfield"));
 
-    var cart_gauge = document.getElementById('cart'); // your canvas element
-    cart_gauge = new Gauge(cart_gauge).setOptions(opts); // create sexy gauge!
-    cart_gauge.maxValue = 1000; // set max gauge value
-    cart_gauge.animationSpeed = 32; // set animation speed (32 is default value)
-    cart_gauge.set($( "#cart" ).data( "value" )); // set actual value
+    var cart_gauge = document.getElementById('cart');
+    cart_gauge = new Gauge(cart_gauge).setOptions(opts);
+    cart_gauge.maxValue = 1000; 
+    cart_gauge.animationSpeed = 32;
+    cart_gauge.set($( "#cart" ).data( "value" ));
     cart_gauge.setTextField(document.getElementById("cart-textfield"));    
 }
 
-
-//var visitors_data = []
 var websiteURL = window.location.protocol + "//" + window.location.host 
 var socket = io.connect(websiteURL+'/app')
 mapObject = $('#visitors-map').vectorMap('get', 'mapObject');
@@ -130,6 +126,3 @@ socket.on('alert', function(message) {
 });
 
 })(jQuery);
-
-
-
