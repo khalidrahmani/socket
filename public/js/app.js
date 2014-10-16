@@ -32,6 +32,7 @@ var live_users_chart, new_returning_logedin_visitors_chart, desktop_mobile_chart
               element: 'new_returning_visitors_donut',
               data: [
                 {label: "New Visitors", value: 50},
+                {label: "Logged in visitors", value: 50},
                 {label: "Returning Visitors", value: 50}
               ]
             });
