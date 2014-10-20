@@ -19,9 +19,6 @@ var UserSchema = new Schema({
   state_province: { type: String },
   postal_code: { type: String },
   country: { type: String },
-  timezone: { type: String },  
-  interactivetel_web_service_url: { type: String }, 
-  interactivetel_api_key: { type: String },   
   createdAt: { type : Date, default : Date.now }
 })
 

@@ -1,6 +1,7 @@
 var mongoose        = require('mongoose')
    ,Visit           = mongoose.model('Visit')    
    ,Visitor         = mongoose.model('Visitor')  
+   ,MaxVisitors      = mongoose.model('MaxVisitors')  
    ,moment          = require('moment')
    ,async           = require("async")
    ,_               = require('underscore')
@@ -21,22 +22,22 @@ exports.index = function (req, res) {
         hour     = now.getHours()
         time_on_site_since_midnight = 0
 
-      Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
+    Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
         total_items_in_cart = results[0].count
         getGraphData(0, hour, function(){
             midnight = now.setHours(0, 0, 0, 0)
             var last_month = new Date()
+            var second_month = new Date()
             last_month.setMonth(last_month.getMonth() - 1)
-            mvp = [];    
-            Visit.find({ start: {$gte: last_month} }).exec(function (err, visits) {
-                for (var i = 0;i<visits.length;i++){
-                    index = visits[i].start.getDay()+"-"+visits[i].start.getMonth()
-                    mvp[index] = mvp[index] || 0;
-                    mvp[index] += 1;
-                    if(mvp[index] > month_visitors_peack ) month_visitors_peack = mvp[index]
-                }    
+            second_month.setMonth(second_month.getMonth() - 2)
+
+            MaxVisitors.aggregate([{$match: {date: {$gte: second_month, $lt: last_month}}}, 
+                {$group: {_id: null, count: { $max: "$count" }}}], function(err,results){
+
+            if(results[0]) month_visitors_peack = results[0].count
+
                 Visit.find({ end: {$gte: midnight} }).exec(function (err, visits) {
-                    for (var key in visits) {
+                    for (var key in visits){
                         time_on_site_since_midnight   +=  moment(visits[key].end).diff(moment(visits[key].start), 'seconds');
                     } 
                     res.render('dashboard/index', {             
@@ -46,10 +47,10 @@ exports.index = function (req, res) {
                         graph_data: graph_data,
                         total_items_in_cart: total_items_in_cart
                     })
-                })  
+                }) 
             })
         })
-     })
+    })
 }
 
 exports.track = function(socket, io){
@@ -93,8 +94,21 @@ exports.track = function(socket, io){
             }
         });
     }
-    allUsers.push(socket);
-    
+    allUsers.push(socket)
+    date = moment().add(1, 'day').format("YYYY/MM/DD");
+    MaxVisitors.findOne({date:  date}, function (err, maxvisitors){        
+        if(maxvisitors){
+            console.log(maxvisitors.date)
+            if (allUsers.length > maxvisitors.count){
+                maxvisitors.count = allUsers.length
+                maxvisitors.save()
+            }
+        }
+        else{
+            MaxVisitors.create({date: date, count: allUsers.length}, function (err) {  })
+        }
+    })
+
     socket.on('disconnect', function () {
         console.log('disconnected')
         start_date = new Date(socket.handshake.time)
