@@ -98,10 +98,10 @@ socket.on('connect', function () {
         urls_hit = "";        
         locations = "";
         for(var prop in data.live_urls_hit){ 
-            urls_hit+= '<tr><td>'+prop+'</td><td>'+data.live_urls_hit[prop]+'</td></tr>'
+            urls_hit+= '<tr><td>'+data.live_urls_hit[prop].url+'</td><td>'+data.live_urls_hit[prop].count+'</td></tr>'
         }
         for(var prop in data.users_location){ 
-            locations+= '<tr><td>'+prop+'</td><td>'+data.users_location[prop]+'</td></tr>'
+            locations+= '<tr><td>'+data.users_location[prop].country+'</td><td>'+data.users_location[prop].count+'</td></tr>'
         }
         $("#urls_hit").html(urls_hit)
         $("#users_location").html(locations)

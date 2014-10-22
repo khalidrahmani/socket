@@ -11,7 +11,7 @@ var mongoose        = require('mongoose')
    ,live_urls_hit   = {}
    ,graph_data      = []
    ,time_on_site_since_midnight = 0
-   ,total_items_in_cart = 300
+   ,total_items_in_cart = 0
 
 var allUsers = [];
 exports.index = function (req, res) {	
@@ -28,8 +28,9 @@ exports.index = function (req, res) {
             midnight = now.setHours(0, 0, 0, 0)
             var last_month = new Date()
             var second_month = new Date()
-            last_month.setMonth(last_month.getMonth() - 1)
-            second_month.setMonth(second_month.getMonth() - 2)
+            last_month.setDate(1)
+            second_month.setDate(1)
+            second_month.setMonth(second_month.getMonth() - 1)
 
             MaxVisitors.aggregate([{$match: {date: {$gte: second_month, $lt: last_month}}}, 
                 {$group: {_id: null, count: { $max: "$count" }}}], function(err,results){
@@ -55,9 +56,8 @@ exports.index = function (req, res) {
 
 exports.track = function(socket, io){
     var visitor_ip          = socket.handshake.headers['x-forwarded-for']    
-       ,url                 = socket.handshake.headers.origin
-       
-    //visitor_ip              = '107.4.145.158' // '197.247.236.119' // // ;
+       ,url                 = socket.handshake.headers.referer
+    visitor_ip              = '107.4.145.158' // '197.247.236.119' // // ;
     console.log(visitor_ip + '----------------------------------------------------------------');
     var geo                 = geoip.lookup(visitor_ip);
     console.log(geo)
@@ -126,7 +126,7 @@ exports.track = function(socket, io){
                 if(map[key].latLng[0] == socket.geo.ll[0] && map[key].latLng[1] == socket.geo.ll[1]){
                     console.log(map[key].latLng[0] + " =  " +  socket.geo.ll[0])
                     map.splice(key, 1)      
-                }                
+                }
             }             
         }
     });  
@@ -149,13 +149,21 @@ exports.app = function(socket, io){
 
         Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
             total_items_in_cart = results[0].count
+            urls_hit_array = []
+            for(var elmnt in live_urls_hit){ 
+                if(live_urls_hit[elmnt]>0) urls_hit_array.push({url: elmnt, count: live_urls_hit[elmnt]})                
+            }
+            users_location_array = []
+            for(var elmnt in users_location){ 
+                if(users_location[elmnt]>0) users_location_array.push({country: elmnt, count: users_location[elmnt]})                
+            }            
             fn({
                 date: _date,    
                 count: live_users_count,
                 new_returning_visitors: visitors_data[0],
                 desktop_mobile: visitors_data[1],
-                live_urls_hit: live_urls_hit,
-                users_location: users_location,
+                live_urls_hit: _.sortBy(urls_hit_array, function(elmnt){ return (- elmnt.count); }),
+                users_location: _.sortBy(users_location_array, function(elmnt){ return (- elmnt.count); }),
                 map: map,
                 time_on_site_since_midnight: time_on_site_since_midnight,
                 formated_time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight }))),

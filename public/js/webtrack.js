@@ -12,7 +12,8 @@ function getCookie(key) {
 window.onload=function(){
 	var logedincookie 				= getCookie(logged_in_user_cookie); // 
 	var visitor_id    				= getCookie(app_cookie);
-	var total_items_incart          = document.getElementById('total_items_incart').innerHTML
+	var total_items_incart          = 0;
+	if(cart = document.getElementById('total_items_incart')) total_items_incart = cart.innerHTML;
 	var socket = io.connect(websiteUrl+'/track',{
 		query: 'cookie='+logedincookie+'|'+visitor_id +'|'+total_items_incart
 	});
@@ -22,5 +23,8 @@ window.onload=function(){
 	socket.on('visitor', function(visitor_id) {
 	 	setCookie(app_cookie, visitor_id, 10000);
 	});
-	document.getElementById('shop_cart').onclick=function(){ socket.emit('alert', "Button clicked");}; 
+	//document.getElementById('shop_cart').onclick=function(){ socket.emit('alert', "Button clicked");}; 
+	var alert = document.getElementsByClassName('alert alert-danger')
+	if(alert[0]) socket.emit('alert', "Checkout Alert")
+	
 }
