@@ -22,7 +22,8 @@ exports.index = function (req, res) {
         hour     = now.getHours()
         time_on_site_since_midnight = 0
 
-    Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
+    //Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
+    Visitor.aggregate([{ $match : { cart: { $ne: 0 } }},{$group: {_id: "$id", count: { $sum: 1 }}}], function(err,results){        
         total_items_in_cart = results[0].count
         getGraphData(0, hour, function(){
             midnight = now.setHours(0, 0, 0, 0)
@@ -147,7 +148,7 @@ exports.app = function(socket, io){
         _date = format(date.getHours())+":"+format(date.getMinutes())+":"+format(date.getSeconds())
         visitors_data  = getVisitorsData(live_users_count, allUsers)
 
-        Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
+        Visitor.aggregate([{ $match : { cart: { $ne: 0 } }},{$group: {_id: "$id", count: { $sum: 1 }}}], function(err,results){
             total_items_in_cart = results[0].count
             urls_hit_array = []
             for(var elmnt in live_urls_hit){ 
