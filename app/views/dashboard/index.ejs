@@ -107,7 +107,41 @@
                 </div>
             </div>
         </section>
-    </div>    
+    </div>   
+    <div class="col-md-3">
+        <div class="profile-nav alt">
+            <section class="panel text-center">
+                <div class="user-heading alt wdgt-row terques-bg">
+                    <i class="fa fa-desktop"></i>
+                </div>
+
+                <div class="panel-body">
+                    <div class="wdgt-value">
+                        <h1 class="count" id="desktop_users_count">-</h1>
+                        <p>Desktop</p>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </div>  
+    <div class="col-md-3">
+        <div class="profile-nav alt">
+            <section class="panel text-center">
+                <div class="user-heading alt wdgt-row terques-bg">
+                    <i class="fa fa-mobile"></i>
+                </div>
+
+                <div class="panel-body">
+                    <div class="wdgt-value">
+                        <h1 class="count" id="mobile_users_count">-</h1>
+                        <p>Mobile</p>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+    </div>       
 </div>
     <div class="row">
         <div class="col-md-3">
@@ -119,7 +153,34 @@
                 </div>
             </div>
         </div>   
-    </div>
+        <div class="col-md-3">
+            <div class="mini-stat clearfix">
+                <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
+                <div class="mini-stat-info">
+                    <span id="live_visitors_count"> - </span> 
+                    Live Visitors Count
+                </div>
+            </div>
+        </div> 
+        <div class="col-md-3">
+            <div class="mini-stat clearfix">
+                <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
+                <div class="mini-stat-info">
+                    <span id="live_new_returning_visitors"> - </span> 
+                    New / Returning visitors
+                </div>
+            </div>
+        </div>    
+        <div class="col-md-3">
+            <div class="mini-stat clearfix">
+                <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
+                <div class="mini-stat-info">
+                    <span id="logged_in_visitors"> - </span> 
+                    Loged in visitors
+                </div>
+            </div>
+        </div>                    
+    </div>    
     <div class="row">
         <div class="col-md-12">
             <section class="panel">
@@ -127,7 +188,7 @@
                     Live Visitors
                 </header>
                 <div class="panel-body">
-                    <div id="graph-area" class="main-chart" 
+                    <div id="live-visitors-area" class="main-chart" 
                     data-visitors='<%- JSON.stringify(graph_data) %>'>
                     </div>
                 </div>
@@ -135,7 +196,21 @@
         </div>        
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-12">
+            <section class="panel">
+                <header class="panel-heading">
+                    Visitors Since Midnight
+                </header>
+                <div class="panel-body">
+                    <div id="visitors-since-midnight-graph" class="main-chart" 
+                    data-visitors='<%- JSON.stringify(graph_data) %>'>
+                    </div>
+                </div>
+            </section>
+        </div>        
+    </div>    
+    <div class="row">
+        <!--div class="col-md-3">
             <section class="panel">
                 <div class="panel-body">
                     <div class="top-stats-panel">
@@ -146,48 +221,14 @@
                     </div>
                 </div>
             </section>
-        </div>    
-        <div class="col-md-3">
-            <section class="panel">
-                <div class="panel-body">
-                    <div class="top-stats-panel">
-                        <div class="gauge-canvas">
-                            <h4 class="widget-h">Desktop/Mobile</h4>
-                        </div>
-                        <div id="desktop_mobile_chart" style="height: 220px;"></div>
-                    </div>
-                </div>
-            </section>
-        </div> 
-                <div class="col-sm-6">
-            <section class="panel">
-                <header class="panel-heading">
-                    Live Visited URLs                            
-                </header>
-                <div class="panel-body">
-                    <table class="table">
-                        <thead>
-                        <tr>                                    
-                            <th>URL</th>
-                            <th>Count</th>                                    
-                        </tr>
-                        </thead>
-                        <tbody id="urls_hit">                                                 
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-8" id="visitors-map" style="height: 400px">        
-         </div>
-        <div class="col-sm-4">
+        </div-->    
+ 
+         <div class="col-sm-6">
             <section class="panel">
                 <header class="panel-heading">
                     Live Visitor Location
                 </header>
-                <div class="panel-body">
+                <div class="panel-body scrolling_div">
                     <table class="table table-striped">
                         <thead>
                         <tr>                                    
@@ -195,12 +236,35 @@
                             <th>Count</th>                                    
                         </tr>
                         </thead>
-                        <tbody id="users_location">
-                        </tbody>
+                        <tbody id="users_location"></tbody>
                     </table>
                 </div>
             </section>
         </div>
+        <div class="col-sm-6">
+            <section class="panel">
+                <header class="panel-heading">
+                    Live Visited URLs                            
+                </header>
+                <div class="panel-body scrolling_div">
+                    <table class="table">
+                        <thead>
+                        <tr>                                    
+                            <th>URL</th>
+                            <th>Count</th>                                    
+                        </tr>
+                        </thead>
+                        <tbody id="urls_hit"> </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-8" id="visitors-map" style="height: 400px">        
+         </div>
+
     </div>
 
     <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="myModal" class="modal fade">
@@ -235,6 +299,8 @@
 <script src="js/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
 <script type="text/javascript" src="js/gritter/js/jquery.gritter.js"></script>
 <script type="text/javascript" src="js/gauge/gauge.min.js"></script>
+<script type="text/javascript" src="js/jquery.slimscroll.min.js"></script>
+
 
 <!--jQuery Flot Chart-->
 <!--script src="js/flot-chart/jquery.flot.js"></script>

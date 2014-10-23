@@ -1,5 +1,5 @@
-var live_users_chart, new_returning_logedin_visitors_chart, desktop_mobile_chart, 
-    urls_hit, locations, mapObject, gauge, graph_data, cart_gauge;
+var visitors_since_midnight_chart, live_users_chart, //new_returning_logedin_visitors_chart,  
+    urls_hit, locations, mapObject, gauge, graph_data = [], cart_gauge;
 (function ($) {
     "use strict";                     
 
@@ -19,30 +19,31 @@ var live_users_chart, new_returning_logedin_visitors_chart, desktop_mobile_chart
     });
 
     if (Morris.EventEmitter) {    
-            graph_data = $("#graph-area").data("visitors")
             live_users_chart = Morris.Line({
-                element: 'graph-area',
-                data:   graph_data,
+                element: 'live-visitors-area',
+                data:   [],
                 xkey: 'x',
                 ykeys: ['value'],
                 labels: ['value'],                
                 parseTime: false
-            });         
-            new_returning_logedin_visitors_chart = Morris.Donut({
+            });  
+            visitors_since_midnight_chart = Morris.Line({
+                element: 'visitors-since-midnight-graph',
+                data:   $("#visitors-since-midnight-graph").data("visitors"),
+                xkey: 'x',
+                ykeys: ['value'],
+                labels: ['value'],                
+                parseTime: false
+            });                   
+            /*new_returning_logedin_visitors_chart = Morris.Donut({
               element: 'new_returning_visitors_donut',
               data: [
                 {label: "New Visitors", value: 50},
                 {label: "Logged in visitors", value: 50},
                 {label: "Returning Visitors", value: 50}
               ]
-            });
-            desktop_mobile_chart = Morris.Donut({
-              element: 'desktop_mobile_chart',
-              data: [
-                {label: "Desktop", value: 50},
-                {label: "Mobile", value: 50}
-              ]
-            });            
+            });*/
+                       
         }
 if (Gauge) {
     var opts = {
@@ -90,11 +91,18 @@ socket.on('connect', function () {
         gauge.set(data.time_on_site_since_midnight);
         $("#cart-textfield").html(data.total_items_in_cart);
         cart_gauge.set(data.total_items_in_cart);
-
+        $("#live_visitors_count").html(data.count);
         graph_data.push({"x": data.date, "value": data.count})
         live_users_chart.setData(graph_data);
-        new_returning_logedin_visitors_chart.setData(data.new_returning_visitors);  
-        desktop_mobile_chart.setData(data.desktop_mobile);  
+        //new_returning_logedin_visitors_chart.setData(data.new_returning_visitors); 
+        console.log(data.new_returning_visitors)
+        
+        $("#live_new_returning_visitors").html(data.new_returning_visitors[0].value +" / "+ data.new_returning_visitors[1].value );
+        $("#logged_in_visitors").html(data.new_returning_visitors[2].value);
+
+        $("#desktop_users_count").html(data.desktop_mobile[0].desktop);
+        $("#mobile_users_count").html(data.desktop_mobile[0].mobile);
+         
         urls_hit = "";        
         locations = "";
         for(var prop in data.live_urls_hit){ 
@@ -124,6 +132,10 @@ socket.on('alert', function(message) {
             time: '',            
             class_name: 'my-sticky-class'
         });    
+});
+
+$('.scrolling_div').slimScroll({
+    height: '230px'
 });
 
 })(jQuery);

@@ -57,7 +57,7 @@ exports.index = function (req, res) {
 exports.track = function(socket, io){
     var visitor_ip          = socket.handshake.headers['x-forwarded-for']    
        ,url                 = socket.handshake.headers.referer
-    visitor_ip              = '107.4.145.158' // '197.247.236.119' // // ;
+    //visitor_ip              = '107.4.145.158' // '197.247.236.119' // // ;
     console.log(visitor_ip + '----------------------------------------------------------------');
     var geo                 = geoip.lookup(visitor_ip);
     console.log(geo)
@@ -190,14 +190,14 @@ function getVisitorsData(live_users_count, SocketsArray){
         });
         new_visitors_count =  live_users_count - returning_visitors_count - logged_in_visitos_count   
         desktop_count = live_users_count - mobile_count
+        desktop_count = parseInt(desktop_count/live_users_count*100)
+        mobile_count  = 100 - desktop_count
     }
     
     return [[ {label: "New Visitors", value: new_visitors_count}, 
              {label: "Returning Visitors", value: returning_visitors_count},
              {label: "Logged in visitors", value: logged_in_visitos_count} ], 
-            [{label: "Desktop", value: desktop_count},
-             {label: "Mobile", value: mobile_count}]
-            ];
+            [{desktop: desktop_count+ " %", mobile: mobile_count+ " %"}]];
 }
 
 function format(i){
