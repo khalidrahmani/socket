@@ -10,10 +10,10 @@ var mongoose        = require('mongoose')
    ,map             = []
    ,live_urls_hit   = {}
    ,graph_data      = []
-   ,time_on_site_since_midnight = 0
    ,total_items_in_cart = 0
+   ,allUsers = []
+   ,midnight
 
-var allUsers = [];
 exports.index = function (req, res) {	
 	var  now = new Date()           
         ,month_visitors_peack = 0;
@@ -22,7 +22,6 @@ exports.index = function (req, res) {
         hour     = now.getHours()
         time_on_site_since_midnight = 0
 
-    //Visitor.aggregate([{$group: {_id: null, count: { $sum: "$cart" }}}], function(err,results){
     Visitor.aggregate([{ $match : { cart: { $ne: 0 } }},{$group: {_id: "$id", count: { $sum: 1 }}}], function(err,results){        
         total_items_in_cart = results[0].count
         getGraphData(0, hour, function(){
@@ -141,12 +140,16 @@ exports.app = function(socket, io){
     socket.on('update_chart', function (name, fn) {
         var new_visitors = returning_visitors = 0
         var live_users_count = allUsers.length
-        console.log(time_on_site_since_midnight)
-        time_on_site_since_midnight = time_on_site_since_midnight + live_users_count*10
-        console.log(map)
         date = new Date()
         _date = format(date.getHours())+":"+format(date.getMinutes())+":"+format(date.getSeconds())
         visitors_data  = getVisitorsData(live_users_count, allUsers)
+
+        time_on_site_since_midnight = 0
+        Visit.find({ end: {$gte: midnight} }).exec(function (err, visits) {
+                    for (var key in visits){
+                        time_on_site_since_midnight   +=  moment(visits[key].end).diff(moment(visits[key].start), 'seconds');
+                    } 
+
 
         Visitor.aggregate([{ $match : { cart: { $ne: 0 } }},{$group: {_id: "$id", count: { $sum: 1 }}}], function(err,results){
             total_items_in_cart = results[0].count
@@ -171,6 +174,8 @@ exports.app = function(socket, io){
                 total_items_in_cart: total_items_in_cart
             })
         })
+})
+
     })
     socket.on('broadcast_message', function (message, fn) { 
         io.of('track').emit('broadcast_message', message);
