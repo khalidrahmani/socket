@@ -23,8 +23,6 @@ window.onload=function(){
 	socket.on('visitor', function(visitor_id) {
 	 	setCookie(app_cookie, visitor_id, 10000);
 	});
-	//document.getElementById('shop_cart').onclick=function(){ socket.emit('alert', "Button clicked");}; 
 	var alert = document.getElementsByClassName('alert alert-danger')
-	if(alert[0]) socket.emit('alert', "Checkout Alert")
-	
+	if(alert[0]) socket.emit('alert', "Checkout Alert "+ visitor_id)	
 }

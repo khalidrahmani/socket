@@ -231,35 +231,3 @@ function getGraphData(start, hour, cb){
     }
     else cb()
 }
-
-/*
-    socket.on('update_chart', function (name, fn) {      io=xHu6iLUThY4RomVgAAAA;   
-        var new_visitors = returning_visitors = 0 ;
-        date = new Date()
-        date.setSeconds(date.getSeconds() - 6)
-        _date = format(date.getHours())+":"+format(date.getMinutes())+":"+format(date.getSeconds())
-        live_urls_hit = {}
-        users_location = {}
-        Visit.where({ end: {$gte: date} }).populate('visitor').exec(function (err, visits) {  
-            for (var i = 0;i<visits.length;i++){
-                if(visits[i].visitor.visits > 1) { returning_visitors+= 1 }
-                else                             { new_visitors+= 1 }                
-                live_urls_hit[visits[i].url] = live_urls_hit[visits[i].url] || 0
-                live_urls_hit[visits[i].url] += 1
-                country = visits[i].visitor.country || ""
-                state = visits[i].visitor.state || ""
-                city = visits[i].visitor.city || ""
-                location = country+" - "+state+" - "+city
-                users_location[location] = users_location[location] || 0
-                users_location[location] += 1
-            }     
-            new_returning_visitors = [ {label: "New Visitors", value: new_visitors}, {label: "Returning Visitors", value: returning_visitors} ]
-            fn({ date: _date, 
-                count: visits.length, 
-                new_returning_visitors: new_returning_visitors, 
-                live_urls_hit: live_urls_hit, 
-                users_location: users_location
-            });
-        })
-    });
-*/
