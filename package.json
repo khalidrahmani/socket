@@ -54,6 +54,7 @@
     ,"request": "latest"    
     ,"express-xml-bodyparser": "latest" 
     ,"socket.io": "latest"   
+    ,"moment-duration-format": "latest"
     
   },
   "devDependencies": {

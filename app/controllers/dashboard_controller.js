@@ -1,3 +1,4 @@
+require("moment-duration-format");
 var mongoose        = require('mongoose')
    ,Visit           = mongoose.model('Visit')    
    ,Visitor         = mongoose.model('Visitor')  
@@ -12,7 +13,7 @@ var mongoose        = require('mongoose')
    ,graph_data      = []
    ,total_items_in_cart = 0
    ,allUsers = []
-   ,midnight
+   ,midnight    
 
 exports.index = function (req, res) {	
 	var  now = new Date()           
@@ -43,7 +44,7 @@ exports.index = function (req, res) {
                     } 
                     res.render('dashboard/index', {             
                         time_on_site_since_midnight: time_on_site_since_midnight, 
-                        formated_time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight }))),
+                        formated_time_on_site_since_midnight: moment.duration(time_on_site_since_midnight, "seconds").format("M[M] W[W] d[days] H[hr] m[m]"),
                         month_visitors_peack: month_visitors_peack,
                         graph_data: graph_data,
                         total_items_in_cart: total_items_in_cart
@@ -170,7 +171,7 @@ exports.app = function(socket, io){
                 users_location: _.sortBy(users_location_array, function(elmnt){ return (- elmnt.count); }),
                 map: map,
                 time_on_site_since_midnight: time_on_site_since_midnight,
-                formated_time_on_site_since_midnight: formatDate(moment(moment({ seconds: time_on_site_since_midnight }))),
+                formated_time_on_site_since_midnight: moment.duration(time_on_site_since_midnight, "seconds").format("M[M] W[W] d[days] H[hr] m[m]"),
                 total_items_in_cart: total_items_in_cart
             })
         })
@@ -215,7 +216,7 @@ function formatMinutes(i){
 } 
 
 function formatDate(time){
-    return time.hour() + "H:" + time.minute()+"M";
+    return time.month() + " Month, " + time.week() + " Week, " + time.day() + " Day " + time.hour() + " H:" + time.minute()+"M";
 }
 
 function getGraphData(start, hour, cb){

@@ -79,12 +79,12 @@
             <div class="panel-body">
                 <div class="top-stats-panel">
                     <div class="gauge-canvas">
-                        <h4 class="widget-h">Total Engagement</h4>
-                        <canvas id="gauge" height="100" width="160" data-value="<%= time_on_site_since_midnight %>"></canvas>
+                        <h4 class="widget-h">Live Visitors</h4>
+                        <canvas id="gauge" height="100" width="160"></canvas>
                     </div>
                     <ul class="gauge-meta clearfix">
-                        <li class="pull-left gauge-value" id="gauge-textfield"><%= time_on_site_since_midnight %></li>
-                        <li class="pull-right gauge-title" id="formated_time_on_site"> <%= formated_time_on_site_since_midnight %></li>
+                        <li class="pull-left gauge-value" id="gauge-textfield"> 0 </li>
+                        <li class="pull-right gauge-title"> visitors </li>
                     </ul>
                 </div>
             </div>
@@ -157,8 +157,10 @@
             <div class="mini-stat clearfix">
                 <span class="mini-stat-icon green"><i class="fa fa-eye"></i></span>
                 <div class="mini-stat-info">
-                    <span id="live_visitors_count"> - </span> 
-                    Live Visitors Count
+                    <span id="formated_time_on_site"> 
+                        <%= formated_time_on_site_since_midnight %> 
+                    </span> 
+                    Total Engagement
                 </div>
             </div>
         </div> 

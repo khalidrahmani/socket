@@ -64,9 +64,9 @@ if (Gauge) {
 
     var target = document.getElementById('gauge'); 
     gauge = new Gauge(target).setOptions(opts); 
-    gauge.maxValue = 500000;
+    gauge.maxValue = 500;
     gauge.animationSpeed = 32;
-    gauge.set($( "#gauge" ).data( "value" ));
+    gauge.set(0);
     gauge.setTextField(document.getElementById("gauge-textfield"));
 
     var cart_gauge = document.getElementById('cart');
@@ -85,13 +85,13 @@ socket.on('connect', function () {
     setInterval(function(){
       socket.emit('update_chart', 'd', function (data) {
         if(graph_data.length > 25) graph_data.splice(0,1); 
-        $("#gauge-textfield").html(data.time_on_site_since_midnight)
+        //$("#gauge-textfield").html(data.count)
         $("#formated_time_on_site").html(data.formated_time_on_site_since_midnight)
 
-        gauge.set(data.time_on_site_since_midnight);
+        gauge.set(data.count);
         $("#cart-textfield").html(data.total_items_in_cart);
         cart_gauge.set(data.total_items_in_cart);
-        $("#live_visitors_count").html(data.count);
+        //$("#live_visitors_count").html(data.count);
         graph_data.push({"x": data.date, "value": data.count})
         live_users_chart.setData(graph_data);
         //new_returning_logedin_visitors_chart.setData(data.new_returning_visitors); 
