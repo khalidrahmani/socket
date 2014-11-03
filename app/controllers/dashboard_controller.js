@@ -95,22 +95,24 @@ exports.track = function(socket, io){
             }
         });
     }
+    console.log(socket)
     allUsers.push(socket)
     date = moment().add(1, 'day').format("YYYY/MM/DD");
     MaxVisitors.findOne({date:  date}, function (err, maxvisitors){        
         if(maxvisitors){
             console.log(maxvisitors.date)
-            if (allUsers.length > maxvisitors.count){
-                maxvisitors.count = allUsers.length
+            if (getUsersCount(allUsers) > maxvisitors.count){
+                maxvisitors.count = getUsersCount(allUsers)
                 maxvisitors.save()
             }
         }
         else{
-            MaxVisitors.create({date: date, count: allUsers.length}, function (err) {  })
+            MaxVisitors.create({date: date, count: getUsersCount(allUsers)}, function (err) {  })
         }
     })
 
     socket.on('disconnect', function () {
+
         console.log('disconnected')
         start_date = new Date(socket.handshake.time)
         mobile = (socket.handshake.headers['user-agent'].indexOf("Mobile") > -1)
@@ -130,17 +132,25 @@ exports.track = function(socket, io){
                 }
             }             
         }
+
     });  
     socket.on('alert', function (message, fn) {
         console.log(message)
         io.of('app').emit('alert', message);
     })
 }
-
+function getUsersCount(socketArray){
+    var usersID = []
+    for (var key in socketArray){
+        socket = socketArray[key]
+        if(usersID.indexOf(socket.visitor_id) == -1) usersID.push(socket.visitor_id)
+    }
+    return usersID.length
+}
 exports.app = function(socket, io){
     socket.on('update_chart', function (name, fn) {
         var new_visitors = returning_visitors = 0
-        var live_users_count = allUsers.length
+        var live_users_count = getUsersCount(allUsers)
         date = new Date()
         _date = format(date.getHours())+":"+format(date.getMinutes())+":"+format(date.getSeconds())
         visitors_data  = getVisitorsData(live_users_count, allUsers)
@@ -152,31 +162,30 @@ exports.app = function(socket, io){
                     } 
 
 
-        Visitor.aggregate([{ $match : { cart: { $ne: 0 } }},{$group: {_id: "$id", count: { $sum: 1 }}}], function(err,results){
-            total_items_in_cart = results[0].count
-            urls_hit_array = []
-            for(var elmnt in live_urls_hit){ 
-                if(live_urls_hit[elmnt]>0) urls_hit_array.push({url: elmnt, count: live_urls_hit[elmnt]})                
-            }
-            users_location_array = []
-            for(var elmnt in users_location){ 
-                if(users_location[elmnt]>0) users_location_array.push({country: elmnt, count: users_location[elmnt]})                
-            }            
-            fn({
-                date: _date,    
-                count: live_users_count,
-                new_returning_visitors: visitors_data[0],
-                desktop_mobile: visitors_data[1],
-                live_urls_hit: _.sortBy(urls_hit_array, function(elmnt){ return (- elmnt.count); }),
-                users_location: _.sortBy(users_location_array, function(elmnt){ return (- elmnt.count); }),
-                map: map,
-                time_on_site_since_midnight: time_on_site_since_midnight,
-                formated_time_on_site_since_midnight: moment.duration(time_on_site_since_midnight, "seconds").format("M[M] W[W] d[days] H[hr] m[m]"),
-                total_items_in_cart: total_items_in_cart
+            Visitor.aggregate([{ $match : { cart: { $ne: 0 } }},{$group: {_id: "$id", count: { $sum: 1 }}}], function(err,results){
+                total_items_in_cart = results[0].count
+                urls_hit_array = []
+                for(var elmnt in live_urls_hit){ 
+                    if(live_urls_hit[elmnt]>0) urls_hit_array.push({url: elmnt, count: live_urls_hit[elmnt]})                
+                }
+                users_location_array = []
+                for(var elmnt in users_location){ 
+                    if(users_location[elmnt]>0) users_location_array.push({country: elmnt, count: users_location[elmnt]})                
+                }            
+                fn({
+                    date: _date,    
+                    count: live_users_count,
+                    new_returning_visitors: visitors_data[0],
+                    desktop_mobile: visitors_data[1],
+                    live_urls_hit: _.sortBy(urls_hit_array, function(elmnt){ return (- elmnt.count); }),
+                    users_location: _.sortBy(users_location_array, function(elmnt){ return (- elmnt.count); }),
+                    map: map,
+                    time_on_site_since_midnight: time_on_site_since_midnight,
+                    formated_time_on_site_since_midnight: moment.duration(time_on_site_since_midnight, "seconds").format("M[M] W[W] d[days] H[hr] m[m]"),
+                    total_items_in_cart: total_items_in_cart
+                })
             })
         })
-})
-
     })
     socket.on('broadcast_message', function (message, fn) { 
         io.of('track').emit('broadcast_message', message);
@@ -186,14 +195,17 @@ exports.app = function(socket, io){
 function getVisitorsData(live_users_count, SocketsArray){
     new_visitors_count = returning_visitors_count = logged_in_visitos_count = desktop_count = mobile_count = 0 ;
     if(live_users_count == 0){
-        new_visitors_count = returning_visitors_count = logged_in_visitos_count = desktop_count = mobile_count = 50 ;
+        new_visitors_count = returning_visitors_count = logged_in_visitos_count = desktop_count = mobile_count = 0 ;
     }
     else{
-
-        SocketsArray.forEach(function(socket) {
-            if(socket.logged_in) logged_in_visitos_count+=1;
-            else if(socket.returning) returning_visitors_count+=1;
-            if(socket.handshake.headers['user-agent'].indexOf("Mobile") > -1) mobile_count+=1;
+        var usersID = []
+        SocketsArray.forEach(function(socket) {            
+            if(usersID.indexOf(socket.visitor_id) == -1) {
+                usersID.push(socket.visitor_id)
+                if(socket.logged_in) logged_in_visitos_count+=1;
+                else if(socket.returning) returning_visitors_count+=1;
+                if(socket.handshake.headers['user-agent'].indexOf("Mobile") > -1) mobile_count+=1;
+            }
         });
         new_visitors_count =  live_users_count - returning_visitors_count - logged_in_visitos_count   
         desktop_count = live_users_count - mobile_count
@@ -204,7 +216,7 @@ function getVisitorsData(live_users_count, SocketsArray){
     return [[ {label: "New Visitors", value: new_visitors_count}, 
              {label: "Returning Visitors", value: returning_visitors_count},
              {label: "Logged in visitors", value: logged_in_visitos_count} ], 
-            [{desktop: desktop_count+ " %", mobile: mobile_count+ " %"}]];
+            [{desktop: desktop_count+ "%", mobile: mobile_count+ "%"}]];
 }
 
 function format(i){

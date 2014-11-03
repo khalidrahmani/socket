@@ -1,4 +1,4 @@
-var visitors_since_midnight_chart, live_users_chart, //new_returning_logedin_visitors_chart,  
+var visitors_since_midnight_chart, live_users_chart, new_returning_logedin_visitors_chart,  
     urls_hit, locations, mapObject, gauge, graph_data = [], cart_gauge;
 (function ($) {
     "use strict";                     
@@ -35,14 +35,14 @@ var visitors_since_midnight_chart, live_users_chart, //new_returning_logedin_vis
                 labels: ['value'],                
                 parseTime: false
             });                   
-            /*new_returning_logedin_visitors_chart = Morris.Donut({
+            new_returning_logedin_visitors_chart = Morris.Donut({
               element: 'new_returning_visitors_donut',
               data: [
                 {label: "New Visitors", value: 50},
                 {label: "Logged in visitors", value: 50},
                 {label: "Returning Visitors", value: 50}
               ]
-            });*/
+            });
                        
         }
 if (Gauge) {
@@ -80,9 +80,11 @@ if (Gauge) {
 var websiteURL = window.location.protocol + "//" + window.location.host 
 var socket = io.connect(websiteURL+'/app')
 mapObject = $('#visitors-map').vectorMap('get', 'mapObject');
-
+var interval = 1000;
 socket.on('connect', function () { 
-    setInterval(function(){
+    setTimeout( socketEmit, interval );
+});
+function socketEmit(){
       socket.emit('update_chart', 'd', function (data) {
         if(graph_data.length > 25) graph_data.splice(0,1); 
         //$("#gauge-textfield").html(data.count)
@@ -94,14 +96,14 @@ socket.on('connect', function () {
         //$("#live_visitors_count").html(data.count);
         graph_data.push({"x": data.date, "value": data.count})
         live_users_chart.setData(graph_data);
-        //new_returning_logedin_visitors_chart.setData(data.new_returning_visitors); 
+        new_returning_logedin_visitors_chart.setData(data.new_returning_visitors); 
         console.log(data.new_returning_visitors)
         
-        $("#live_new_returning_visitors").html(data.new_returning_visitors[0].value +" / "+ data.new_returning_visitors[1].value );
-        $("#logged_in_visitors").html(data.new_returning_visitors[2].value);
+        $("#live_new_returning_visitors").html(data.new_returning_visitors[0].value +" / "+ data.new_returning_visitors[1].value +" / "+ data.new_returning_visitors[2].value );
+        //$("#logged_in_visitors").html(data.new_returning_visitors[2].value);
 
-        $("#desktop_users_count").html(data.desktop_mobile[0].desktop);
-        $("#mobile_users_count").html(data.desktop_mobile[0].mobile);
+        $("#desktop_users_count").html(data.desktop_mobile[0].desktop+' / '+data.desktop_mobile[0].mobile);
+        //$("#mobile_users_count").html(data.desktop_mobile[0].mobile);
          
         urls_hit = "";        
         locations = "";
@@ -115,10 +117,11 @@ socket.on('connect', function () {
         $("#users_location").html(locations)
         mapObject.removeAllMarkers();        
         mapObject.addMarkers(data.map, []);
-      });       
-    }, 10000);       // 10 seconds
-});
+        interval = 10000
+        setTimeout( socketEmit, interval );
+      }); 
 
+}
 $( "#broadcast_message_button" ).click(function() {
     $( "#broadcast_title" ).prepend($("<span id='message_text'>message broadcasted</span>"));
     setTimeout(function(){$("#message_text").hide()}, 1000);

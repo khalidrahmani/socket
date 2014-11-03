@@ -8,12 +8,12 @@ function getCookie(key) {
     var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
     return keyValue ? keyValue[2] : null;
 }
-
 window.onload=function(){
 	var logedincookie 				= getCookie(logged_in_user_cookie); // 
 	var visitor_id    				= getCookie(app_cookie);
 	var total_items_incart          = 0;
 	if(cart = document.getElementById('total_items_incart')) total_items_incart = cart.innerHTML;
+	if(isNaN(parseInt(total_items_incart))) total_items_incart = 0;
 	var socket = io.connect(websiteUrl+'/track',{
 		query: 'cookie='+logedincookie+'|'+visitor_id +'|'+total_items_incart
 	});
