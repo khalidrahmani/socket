@@ -1,24 +1,17 @@
 
-var mongoose = require('mongoose')
-  , Schema = mongoose.Schema
-  , crypto = require('crypto')
-  , validate = require('mongoose-validator')
-  , uniqueValidator = require('mongoose-unique-validator')
+var  mongoose = require('mongoose')
+    ,Schema = mongoose.Schema
+    ,crypto = require('crypto')
+    ,validate = require('mongoose-validator')
+    ,uniqueValidator = require('mongoose-unique-validator')
+    ,URL = require('url')
 
 var UserSchema = new Schema({
-  first_name: { type: String, required: "can't be blank" },  
-  last_name: { type: String, required: "can't be blank" },  
   phone: { type: String },   
   email: { type: String, required: "can't be blank", unique: true, validate: validate({validator: 'isEmail'}) },  
   password: { type: String, required: "can't be blank"},
-  salt: { type: String },
-  company_name: { type: String },
-  street_address: { type: String },
-  street_address_2: { type: String },
-  city: { type: String },
-  state_province: { type: String },
-  postal_code: { type: String },
-  country: { type: String },
+  salt: { type: String },  
+  website_url: { type: String, required: "can't be blank", unique: true, validate: validate({validator: 'isURL'}) },  
   createdAt: { type : Date, default : Date.now }
 })
 
@@ -55,10 +48,13 @@ UserSchema.virtual('full_name').get(function () {
   return this.first_name + " " +this.last_name
 })
 
+UserSchema.virtual('formatedwebsite_url').get(function () {
+  return URL.parse(this.website_url).hostname || this.website_url
+})
+
 UserSchema.virtual('sites').get(function () {
   var id = this._id
-  Site.find({}, function (err, sites) {
-    console.log("in")
+  Site.find({}, function (err, sites) {    
     return sites
   })
 })

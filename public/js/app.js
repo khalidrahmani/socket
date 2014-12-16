@@ -73,7 +73,7 @@ if (Gauge) {
     cart_gauge = new Gauge(cart_gauge).setOptions(opts);
     cart_gauge.maxValue = 1000; 
     cart_gauge.animationSpeed = 32;
-    cart_gauge.set($( "#cart" ).data( "value" ));
+    cart_gauge.set(0);
     cart_gauge.setTextField(document.getElementById("cart-textfield"));    
 }
 
@@ -85,19 +85,22 @@ socket.on('connect', function () {
     setTimeout( socketEmit, interval );
 });
 function socketEmit(){
-      socket.emit('update_chart', 'd', function (data) {
+      socket.emit('update_chart', tracking_url, function (data) {
         if(graph_data.length > 25) graph_data.splice(0,1); 
         //$("#gauge-textfield").html(data.count)
         $("#formated_time_on_site").html(data.formated_time_on_site_since_midnight)
+        $("#cart_abandonment").html(data.cart_abandonment)
 
         gauge.set(data.count);
         $("#cart-textfield").html(data.total_items_in_cart);
+        $("#average_engagement").html(data.average_engagement+ " on average");
+
         cart_gauge.set(data.total_items_in_cart);
         //$("#live_visitors_count").html(data.count);
         graph_data.push({"x": data.date, "value": data.count})
         live_users_chart.setData(graph_data);
         new_returning_logedin_visitors_chart.setData(data.new_returning_visitors); 
-        console.log(data.new_returning_visitors)
+        //console.log(data.new_returning_visitors)
         
         $("#live_new_returning_visitors").html(data.new_returning_visitors[0].value +" / "+ data.new_returning_visitors[1].value +" / "+ data.new_returning_visitors[2].value );
         //$("#logged_in_visitors").html(data.new_returning_visitors[2].value);
@@ -127,18 +130,38 @@ $( "#broadcast_message_button" ).click(function() {
     setTimeout(function(){$("#message_text").hide()}, 1000);
     socket.emit('broadcast_message', $( "#message" ).val());       
 });
-socket.on('alert', function(message) {      
-    $.gritter.add({            
+socket.on('alert', function(message){
+    if(message.tracking_url == tracking_url){
+        console.log(message.message)
+        $.gritter.add({            
             title: 'Alert',            
-            text: message,  
+            text: message.message,  
             sticky: true,            
             time: '',            
             class_name: 'my-sticky-class'
-        });    
+        });        
+    }    
 });
 
 $('.scrolling_div').slimScroll({
     height: '230px'
 });
+
+$("#setting_form").submit(function(event){
+    event.preventDefault();
+    console.log($(this).serialize())
+    $.post( "/users/update", $( "#setting_form" ).serialize(), function(errors){
+     if(errors){
+        var _errors = {};
+        _errors[errors.path] = errors.message;
+        errors = errors.errors
+        for(var index in errors) {
+            var err = errors[index];   
+            $("#"+err.path).parent().addClass("has-error")             
+        }
+      }
+      else $('#settingsModal').modal('hide');   
+   });    
+})
 
 })(jQuery);

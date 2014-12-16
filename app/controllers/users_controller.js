@@ -85,21 +85,12 @@ exports.edit = function (req, res) {
 }
 
 exports.update = function(req, res){
-  user = req.user
+  user = req.user  
   user = extend(user, req.body)
+  console.log(user)
   user.save(function (err) {
-        if (err) { 
-          return res.render('users/edit', {
-             error: {type: "error", errors: user.errors}
-            ,params: req.body
-            ,user: user
-          })
-        }   
-        else{
-          req.session.messages = {type: 'success', message: 'User updated'}
-          return res.redirect('/')      
-        }         
-      })  
+    res.json(err)         
+  })  
 }
 
 exports.settings = function (req, res) {

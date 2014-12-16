@@ -1,4 +1,4 @@
-var websiteUrl = "https://66.71.245.10:3001", app_cookie = 'dash_visitor_id__45', logged_in_user_cookie = 'company_name_stats_user';
+var websiteUrl = "https://66.71.245.10:3001", app_cookie = 'dash_visitor_id__55', logged_in_user_cookie = 'company_name_stats_user';
 function setCookie(key, value, expiration) {
     var expires = new Date();
     expires.setTime(expires.getTime() + (60 * 1000* expiration));
@@ -9,11 +9,11 @@ function getCookie(key) {
     return keyValue ? keyValue[2] : null;
 }
 window.onload=function(){
-	var logedincookie 				= getCookie(logged_in_user_cookie); // 
+	var logedincookie 				= getCookie(logged_in_user_cookie);
 	var visitor_id    				= getCookie(app_cookie);
 	var total_items_incart          = 0;
 	if(cart = document.getElementById('total_items_incart')) total_items_incart = cart.innerHTML;
-	if(isNaN(parseInt(total_items_incart))) total_items_incart = 0;
+	total_items_incart = (isNaN(parseInt(total_items_incart))) ? 0 : 1;
 	var socket = io.connect(websiteUrl+'/track',{
 		query: 'cookie='+logedincookie+'|'+visitor_id +'|'+total_items_incart
 	});
@@ -24,5 +24,5 @@ window.onload=function(){
 	 	setCookie(app_cookie, visitor_id, 10000);
 	});
 	var alert = document.getElementsByClassName('alert alert-danger')
-	if(alert[0]) socket.emit('alert', "Checkout Alert "+ visitor_id)	
+	if(alert[0]) socket.emit('alert', "Checkout Alert "+ logedincookie)
 }

@@ -9,8 +9,9 @@ var VisitorSchema = new Schema({
   ,city:              { type: String }
   ,state:             { type: String }
   ,country:           { type: String }
+  ,tracking_url:      { type: String }
   ,first_visit:       { type : Date, default : Date.now }
-  ,last_visit:        { type : Date, default : Date.now }
+  ,last_visit:        { type : Date }
 })
 /*
 VisitorSchema.pre('save', function(next) {

@@ -1,12 +1,11 @@
 
 var express = require('express')
-   ,fs = require('fs')
-   ,passport = require('passport')
-   ,port = process.env.PORT || 3001
-
-var env = process.env.NODE_ENV || 'development'
-  , config = require('./config/config')[env]
-  , mongoose = require('mongoose')
+    ,fs = require('fs')
+    ,passport = require('passport')
+    ,port = process.env.PORT || 3001
+    ,env = process.env.NODE_ENV || 'development'
+    ,config = require('./config/config')[env]
+    ,mongoose = require('mongoose')
 
 var connect = function () {
   var options = { server: { socketOptions: { keepAlive: 1 } } }

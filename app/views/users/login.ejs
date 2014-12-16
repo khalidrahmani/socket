@@ -35,11 +35,7 @@
     <div class="container">
 
       <form class="form-signin" action="/users/session" method="post">
-        <div class="alert alert-error">
-                    <a class="close" data-dismiss="alert">×</a>
-                    Invalid email or password. 
-                 </div>
-        <h2 class="form-signin-heading">sign in now</h2>
+        <h2 class="form-signin-heading">sign in or <a href="/signup"> create account </a></h2>
         <div class="login-wrap">
             <div class="user-login-info">
                 <input type="text" name="email" class="form-control" placeholder="Email"  value="<%= email %>" autofocus>

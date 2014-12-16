@@ -2,8 +2,7 @@
 var async              = require('async')
   , users_controller   = require('../app/controllers/users_controller')
   , dashboard_controller   = require('../app/controllers/dashboard_controller')  
-  , tracker_controller = require('../app/controllers/tracker_controller')  
-  , auth = require('./middlewares/authorization')
+  , auth                    = require('./middlewares/authorization')
 
 module.exports = function (app, passport) {
 
@@ -27,8 +26,6 @@ module.exports = function (app, passport) {
   app.get('/', auth.requiresLogin, dashboard_controller.index)  
   //app.post('/dashboard/broadcast', auth.requiresLogin, dashboard_controller.broadcast)  
 
-  app.post('/track', tracker_controller.track)
-  
   app.get('*', function(req, res, next) {
       res.status(404).render('404', {
         url: req.originalUrl,
